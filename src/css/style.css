@@ -137,12 +137,29 @@ p { margin: 0 0 16px; }
 
 /* Hero */
 .hero {
+  position: relative;
   background: var(--espresso);
   color: var(--cream);
   padding: 72px 0 100px;
   text-align: center;
+  overflow: hidden;
 }
-.hero-inner { max-width: 760px; margin: 0 auto; }
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -18%;
+  right: -12%;
+  width: 620px;
+  height: 620px;
+  max-width: 70vw;
+  max-height: 70vw;
+  background-image: url("/images/brand/icon-white.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
 .hero-logo { width: 168px; margin: 0 auto 28px; }
 .hero .eyebrow { color: var(--gold); }
 .hero h1 { color: var(--white); }
