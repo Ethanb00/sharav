@@ -3,7 +3,7 @@ backend:
   repo: Ethanb00/sharav
   branch: main
   # Set once the Cloudflare Worker OAuth proxy is deployed (see README / OAuth setup docs).
-  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+  base_url: https://sharav-cms-auth.sharav.workers.dev
   auth_endpoint: auth
 
 publish_mode: simple
