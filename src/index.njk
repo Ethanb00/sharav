@@ -1,0 +1,116 @@
+---
+layout: layouts/base.njk
+---
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <img src="/images/brand/logo-color.svg" alt="{{ site.name }} — {{ site.tagline }}" class="hero-logo">
+    <p class="eyebrow">{{ site.hero_eyebrow }}</p>
+    <h1>{{ site.hero_heading }}</h1>
+    <p class="hero-sub">{{ site.hero_sub }}</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn btn-primary">See the Menu</a>
+      <a href="#find-us" class="btn btn-ghost">Find Us This Week</a>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="section about">
+  <div class="wrap about-inner">
+    <div class="placeholder-img about-img" data-label="Booth / food photo coming soon">
+      <img src="/images/brand/icon-color.svg" alt="" class="placeholder-watermark">
+    </div>
+    <div class="about-copy">
+      <p class="eyebrow">Our Story</p>
+      <h2>{{ site.about_heading }}</h2>
+      <p>{{ site.about_body }}</p>
+      <p class="mission">&ldquo;{{ site.mission }}&rdquo;</p>
+    </div>
+  </div>
+</section>
+
+<section id="values" class="section values">
+  <div class="wrap">
+    <p class="eyebrow center">Brand Values</p>
+    <h2 class="center">What Sharav is built on</h2>
+    <div class="values-grid">
+      {% for value in values %}
+      <div class="value-card">
+        <img src="{{ value.icon }}" alt="" class="value-icon">
+        <h3>{{ value.label }}</h3>
+        <p>{{ value.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="menu" class="section menu">
+  <div class="wrap">
+    <p class="eyebrow center">On the Menu</p>
+    <h2 class="center">{{ site.menu_heading }}</h2>
+    <p class="section-sub center">{{ site.menu_sub }}</p>
+
+    <div class="menu-grid">
+      {% for dish in menu.items %}
+      <article class="dish-card">
+        {% if dish.photo %}
+        <img src="{{ dish.photo }}" alt="{{ dish.name }}" class="dish-img">
+        {% else %}
+        <div class="placeholder-img dish-img" data-label="Photo coming soon">
+          <img src="/images/brand/icon-color.svg" alt="" class="placeholder-watermark">
+        </div>
+        {% endif %}
+        <h3>{{ dish.name }}</h3>
+        <p>{{ dish.description }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="find-us" class="section find-us">
+  <div class="wrap find-us-inner">
+    <div>
+      <p class="eyebrow">Find Us</p>
+      <h2>{{ site.find_us_heading }}</h2>
+      <p>{{ site.find_us_body }}</p>
+      <a href="{{ site.instagram_url }}" class="btn btn-primary" target="_blank" rel="noopener">
+        Follow {{ site.instagram_handle }} for weekly locations
+      </a>
+    </div>
+    <div class="schedule-card">
+      <h3>This Week</h3>
+      <ul class="schedule-list">
+        {% for stop in schedule.items %}
+        <li>
+          <span class="schedule-day">{{ stop.day }}</span>
+          {% if stop.market %}
+          <span class="schedule-detail">{{ stop.market }}{% if stop.time %} &middot; {{ stop.time }}{% endif %}</span>
+          {% else %}
+          <span class="schedule-tba">Market &amp; time TBA</span>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="schedule-note">Schedule updates weekly &mdash; check Instagram before you head out.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section contact">
+  <div class="wrap contact-inner">
+    <p class="eyebrow center">Say Hello</p>
+    <h2 class="center">Questions, catering, or just want to say hi?</h2>
+    <div class="contact-grid">
+      <a class="contact-card" href="{{ site.instagram_url }}" target="_blank" rel="noopener">
+        <span class="contact-label">Instagram</span>
+        <span class="contact-value">{{ site.instagram_handle }}</span>
+      </a>
+      <a class="contact-card" href="mailto:{{ site.email }}">
+        <span class="contact-label">Email</span>
+        <span class="contact-value">{{ site.email }}</span>
+      </a>
+    </div>
+  </div>
+</section>

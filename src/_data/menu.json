@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "name": "Sabich",
+      "description": "Iraqi-Israeli pita stuffed with fried eggplant, egg, hummus, amba, and tahini.",
+      "photo": ""
+    },
+    {
+      "name": "Malawach",
+      "description": "Yemenite flaky layered flatbread, served with crushed tomato and zhug.",
+      "photo": ""
+    },
+    {
+      "name": "Burekas",
+      "description": "Flaky phyllo pastries filled with potato, spinach-feta, or mushroom.",
+      "photo": ""
+    },
+    {
+      "name": "Shakshuka",
+      "description": "North African eggs poached low and slow in a spiced tomato-pepper sauce.",
+      "photo": ""
+    },
+    {
+      "name": "Jachnun",
+      "description": "Slow-rolled, caramelized Yemenite pastry — a Shabbat morning tradition.",
+      "photo": ""
+    },
+    {
+      "name": "Mezze Plate",
+      "description": "Matbucha, baba ganoush, and harissa carrot salad, with warm pita on the side.",
+      "photo": ""
+    }
+  ]
+}
