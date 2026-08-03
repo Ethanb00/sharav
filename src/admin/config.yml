@@ -60,7 +60,7 @@ collections:
           - { label: "Hero Heading", name: "hero_heading", widget: "text" }
           - { label: "Hero Subtext", name: "hero_sub", widget: "text" }
           - { label: "About Heading", name: "about_heading", widget: "string" }
-          - { label: "About Body", name: "about_body", widget: "text" }
+          - { label: "About Body", name: "about_body", widget: "richtext" }
           - { label: "Mission Statement", name: "mission", widget: "text" }
           - { label: "Menu Section Heading", name: "menu_heading", widget: "string" }
           - { label: "Menu Section Subtext", name: "menu_sub", widget: "text" }

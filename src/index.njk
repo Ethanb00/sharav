@@ -23,7 +23,7 @@ layout: layouts/base.njk
     <div class="about-copy">
       <p class="eyebrow">Our Story</p>
       <h2>{{ site.about_heading }}</h2>
-      <p>{{ site.about_body }}</p>
+      <div class="about-body">{{ site.about_body | markdown | safe }}</div>
       <p class="mission">&ldquo;{{ site.mission }}&rdquo;</p>
     </div>
   </div>

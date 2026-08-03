@@ -1,4 +1,9 @@
+const markdownIt = require("markdown-it")({ html: false, breaks: false, linkify: true });
+
 module.exports = function (eleventyConfig) {
+  // Renders Markdown from Decap CMS's "richtext" fields (e.g. about_body) as real HTML.
+  eleventyConfig.addFilter("markdown", (value) => (value ? markdownIt.render(value) : ""));
+
   eleventyConfig.addPassthroughCopy({ "src/css": "css" });
   eleventyConfig.addPassthroughCopy({ "src/js": "js" });
   eleventyConfig.addPassthroughCopy({ "src/images": "images" });
