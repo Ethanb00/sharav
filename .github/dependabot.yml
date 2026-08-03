@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Eleventy and any other npm packages used to build the site
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # actions/checkout, actions/deploy-pages, etc. used in .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
