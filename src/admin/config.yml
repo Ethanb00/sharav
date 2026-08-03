@@ -25,7 +25,7 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - { label: "Name", name: "name", widget: "string" }
-              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Description", name: "description", widget: "richtext" }
               - { label: "Photo", name: "photo", widget: "image", required: false }
 
   - name: "schedule"
@@ -58,14 +58,14 @@ collections:
           - { label: "Search Engine Description", name: "site_description", widget: "text" }
           - { label: "Hero Eyebrow", name: "hero_eyebrow", widget: "string" }
           - { label: "Hero Heading", name: "hero_heading", widget: "text" }
-          - { label: "Hero Subtext", name: "hero_sub", widget: "text" }
+          - { label: "Hero Subtext", name: "hero_sub", widget: "richtext" }
           - { label: "About Heading", name: "about_heading", widget: "string" }
           - { label: "About Body", name: "about_body", widget: "richtext" }
           - { label: "Mission Statement", name: "mission", widget: "text" }
           - { label: "Menu Section Heading", name: "menu_heading", widget: "string" }
-          - { label: "Menu Section Subtext", name: "menu_sub", widget: "text" }
+          - { label: "Menu Section Subtext", name: "menu_sub", widget: "richtext" }
           - { label: "Find Us Heading", name: "find_us_heading", widget: "string" }
-          - { label: "Find Us Body", name: "find_us_body", widget: "text" }
+          - { label: "Find Us Body", name: "find_us_body", widget: "richtext" }
           - { label: "Instagram Handle", name: "instagram_handle", widget: "string" }
           - { label: "Instagram URL", name: "instagram_url", widget: "string" }
           - { label: "Contact Email", name: "email", widget: "string" }

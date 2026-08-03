@@ -7,7 +7,7 @@ layout: layouts/base.njk
     <img src="/images/brand/icon-white.svg" alt="{{ site.name }} icon" class="hero-logo">
     <p class="eyebrow">{{ site.hero_eyebrow }}</p>
     <h1>{{ site.hero_heading }}</h1>
-    <p class="hero-sub">{{ site.hero_sub }}</p>
+    <div class="hero-sub">{{ site.hero_sub | markdown | safe }}</div>
     <div class="hero-actions">
       <a href="#menu" class="btn btn-primary">See the Menu</a>
       <a href="#find-us" class="btn btn-ghost">Find Us This Week</a>
@@ -49,7 +49,7 @@ layout: layouts/base.njk
   <div class="wrap">
     <p class="eyebrow center">On the Menu</p>
     <h2 class="center">{{ site.menu_heading }}</h2>
-    <p class="section-sub center">{{ site.menu_sub }}</p>
+    <div class="section-sub center">{{ site.menu_sub | markdown | safe }}</div>
 
     <div class="menu-grid">
       {% for dish in menu.items %}
@@ -62,7 +62,7 @@ layout: layouts/base.njk
         </div>
         {% endif %}
         <h3>{{ dish.name }}</h3>
-        <p>{{ dish.description }}</p>
+        <div class="dish-desc">{{ dish.description | markdown | safe }}</div>
       </article>
       {% endfor %}
     </div>
@@ -74,7 +74,7 @@ layout: layouts/base.njk
     <div>
       <p class="eyebrow">Find Us</p>
       <h2>{{ site.find_us_heading }}</h2>
-      <p>{{ site.find_us_body }}</p>
+      <div class="find-us-body">{{ site.find_us_body | markdown | safe }}</div>
       <a href="{{ site.instagram_url }}" class="btn btn-primary" target="_blank" rel="noopener">
         Follow {{ site.instagram_handle }} for weekly locations
       </a>
