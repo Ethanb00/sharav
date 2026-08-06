@@ -6,7 +6,8 @@
     },
     {
       "name": "Hummus",
-      "description": "Slow-simmered chickpeas blended with tahini, lemon, and garlic until impossibly smooth, finished with a pour of olive oil, pine nuts, and sumac."
+      "description": "Slow-simmered chickpeas blended with tahini, lemon, and garlic until impossibly smooth, finished with a pour of olive oil, pine nuts, and sumac.",
+      "photo": "/images/dishes/hummus.jpg"
     },
     {
       "name": "Zhug",
