@@ -1,0 +1,92 @@
+{
+  "web3formsAccessKey": "REPLACE-WITH-YOUR-WEB3FORMS-ACCESS-KEY",
+  "minimum": 40,
+  "depositThreshold": 150,
+  "depositPercent": 50,
+  "leadTimeShort": "48 hr",
+  "leadTimeLong": "1 wk for pans",
+  "phone": "(240) 308-8109",
+  "email": "ethan@eatsharav.com",
+  "instagram": "@eatsharav",
+  "dips": [
+    {
+      "key": "hummus",
+      "name": "Hummus",
+      "hot": false,
+      "sizes": [
+        { "value": "8", "label": "8 oz", "price": 10 },
+        { "value": "16", "label": "16 oz", "price": 18 },
+        { "value": "32", "label": "32 oz", "price": 32 },
+        { "value": "half", "label": "Half pan", "price": 58 },
+        { "value": "full", "label": "Full pan", "price": 110 }
+      ]
+    },
+    {
+      "key": "baba",
+      "name": "Baba Ganoush",
+      "hot": false,
+      "sizes": [
+        { "value": "8", "label": "8 oz", "price": 10 },
+        { "value": "16", "label": "16 oz", "price": 18 },
+        { "value": "32", "label": "32 oz", "price": 32 },
+        { "value": "half", "label": "Half pan", "price": 58 },
+        { "value": "full", "label": "Full pan", "price": 110 }
+      ]
+    },
+    {
+      "key": "muhammara",
+      "name": "Muhammara",
+      "hot": false,
+      "sizes": [
+        { "value": "8", "label": "8 oz", "price": 10 },
+        { "value": "16", "label": "16 oz", "price": 18 },
+        { "value": "32", "label": "32 oz", "price": 32 },
+        { "value": "half", "label": "Half pan", "price": 58 },
+        { "value": "full", "label": "Full pan", "price": 110 }
+      ]
+    },
+    {
+      "key": "carrot",
+      "name": "Za'atar Carrot Dip",
+      "hot": false,
+      "sizes": [
+        { "value": "8", "label": "8 oz", "price": 10 },
+        { "value": "16", "label": "16 oz", "price": 18 },
+        { "value": "32", "label": "32 oz", "price": 32 },
+        { "value": "half", "label": "Half pan", "price": 58 },
+        { "value": "full", "label": "Full pan", "price": 110 }
+      ]
+    },
+    {
+      "key": "zhug",
+      "name": "Zhug",
+      "hot": true,
+      "sizes": [
+        { "value": "8", "label": "8 oz", "price": 14 },
+        { "value": "16", "label": "16 oz", "price": 26 }
+      ]
+    }
+  ],
+  "pitas": [
+    { "key": "classic", "name": "Classic pita", "unit": "dozen", "price": 40 },
+    { "key": "zaatar", "name": "Za'atar pita", "unit": "dozen", "price": 45 }
+  ],
+  "infoCards": [
+    {
+      "label": "Lead time",
+      "body": "Containers up to 32 oz need 48 hours' notice. Half pans, full pans, and pita by the dozen need one week."
+    },
+    {
+      "label": "Minimum & deposit",
+      "body": "Pre-orders start at $40. Orders over $150 take a 50% deposit to confirm; the balance is due at pickup."
+    },
+    {
+      "label": "Allergens",
+      "body": "One kitchen handles sesame, tree nuts, and wheat. Tell us about restrictions and we'll advise honestly."
+    },
+    {
+      "label": "Planning an event?",
+      "body": "This form is for pre-orders. For platters, staffing, and full spreads, ask for the catering form."
+    }
+  ]
+}
