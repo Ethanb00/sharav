@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/special-order.css">
+<link rel="stylesheet" href="{{ '/css/style.css' | cachebust }}">
+<link rel="stylesheet" href="{{ '/css/special-order.css' | cachebust }}">
 </head>
 <body>
 
@@ -157,7 +157,7 @@
 
 </div>
 
-<script src="/js/main.js"></script>
-<script src="/js/special-order.js"></script>
+<script src="{{ '/js/main.js' | cachebust }}"></script>
+<script src="{{ '/js/special-order.js' | cachebust }}"></script>
 </body>
 </html>
