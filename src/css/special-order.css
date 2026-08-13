@@ -50,18 +50,8 @@ select:hover { background-color: var(--cream) !important; border-color: var(--ru
   gap: 28px;
   flex-wrap: wrap;
 }
-.so-header-brand { display: inline-flex; align-items: center; gap: 14px; color: var(--cream); }
-.so-header-brand-icon { height: 54px; width: auto; display: block; flex-shrink: 0; }
-.so-header-brand-text { display: flex; flex-direction: column; gap: 5px; }
-.so-header-brand-wordmark { height: 27px; width: auto; display: block; }
-.so-header-brand-subtitle {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: currentColor;
-  line-height: 1;
-}
+.so-header-brand { display: inline-flex; align-items: center; }
+.so-header-brand-icon { height: 72px; width: auto; display: block; flex-shrink: 0; }
 .so-header-title { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right; }
 .so-header-h1 { font-size: 27px; font-weight: 600; color: var(--cream); letter-spacing: -0.3px; line-height: 1.1; }
 .so-header-sub { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--cream); }
