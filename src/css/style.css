@@ -335,7 +335,19 @@ p { margin: 0 0 16px; white-space: pre-line; }
   color: #cbb187;
   padding: 32px 0;
 }
-.footer-logo { height: 26px; width: auto; }
+.footer-brand { display: inline-flex; align-items: center; gap: 10px; color: #cbb187; }
+.footer-brand-icon { height: 32px; width: auto; display: block; flex-shrink: 0; }
+.footer-brand-text { display: flex; flex-direction: column; gap: 3px; }
+.footer-brand-wordmark { height: 15px; width: auto; display: block; }
+.footer-brand-subtitle {
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: currentColor;
+  line-height: 1;
+}
 .footer-inner {
   display: flex;
   align-items: center;
