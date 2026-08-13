@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/special-order.css">
 </head>
 <body>
@@ -19,8 +20,10 @@
 
 <div class="so-page">
 
-  <header class="so-header">
-    <div class="so-header-inner">
+  {% include "partials/nav.njk" %}
+
+  <section class="so-hero">
+    <div class="so-hero-inner">
       <a href="/" aria-label="Back to eatsharav.com" class="so-header-brand">
         <img src="/images/brand/icon-cream.svg" alt="" class="so-header-brand-icon">
         <div class="so-header-brand-text">
@@ -33,7 +36,7 @@
         <div class="so-header-sub">Market pickup &amp; local delivery</div>
       </div>
     </div>
-  </header>
+  </section>
   <div class="so-accent-bar"></div>
 
   <main class="so-main">
@@ -154,6 +157,7 @@
 
 </div>
 
+<script src="/js/main.js"></script>
 <script src="/js/special-order.js"></script>
 </body>
 </html>
