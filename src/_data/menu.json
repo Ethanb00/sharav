@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "name": "Pita",
+      "description": "Fresh-baked and served warm, our pita puffs in a blazing oven and comes out soft, pillowy, and made for scooping. Nothing like the grocery store version."
+    },
+    {
+      "name": "Hummus",
+      "description": "Slow-simmered chickpeas blended with tahini, lemon, and garlic until impossibly smooth, finished with a pour of olive oil, pine nuts, and sumac.",
+      "photo": "/images/dishes/hummus.jpg"
+    },
+    {
+      "name": "Zhug",
+      "description": "The fiery Yemenite green condiment: cilantro, parsley, hot chilies, and garlic ground with toasted cardamom, cumin, and coriander. Bright, herbal, and hot. A little goes a long way."
+    },
+    {
+      "name": "Baba Ganoush",
+      "description": "Whole eggplants charred over open flame until they collapse, then folded with tahini and lemon. Deeply smoky, silky, and a little rustic."
+    },
+    {
+      "name": "Muhammara",
+      "description": "A Syrian spread of roasted red peppers and walnuts with pomegranate molasses and Aleppo pepper. Sweet, tart, nutty, and gently spiced."
+    },
+    {
+      "name": "Roasted Za'atar Carrot Dip",
+      "description": "Our signature dish. Carrots roasted with garlic and za'atar until sweet and caramelized, blended with tahini and pistachios, and topped with chopped pistachios and Aleppo pepper. Earthy, warm, rich, and satisfying."
+    }
+  ]
+}

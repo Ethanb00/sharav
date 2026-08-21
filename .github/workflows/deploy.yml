@@ -26,7 +26,6 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run sync-design
       - run: npm run build
 
       - uses: actions/configure-pages@v5

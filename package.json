@@ -5,8 +5,7 @@
   "private": true,
   "scripts": {
     "start": "eleventy --serve",
-    "build": "eleventy",
-    "sync-design": "node scripts/sync-design.js"
+    "build": "eleventy"
   },
   "repository": {
     "type": "git",
@@ -14,6 +13,7 @@
   },
   "license": "UNLICENSED",
   "devDependencies": {
-    "@11ty/eleventy": "^3.1.6"
+    "@11ty/eleventy": "^3.1.6",
+    "markdown-it": "^15.0.0"
   }
 }

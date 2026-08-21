@@ -1,81 +1,75 @@
 # Sharav — Website
 
-Marketing site for Sharav, a Mizrahi Jewish food business at farmers markets in the Washington
-DC / Maryland area. Built with [Eleventy](https://www.11ty.dev/) (plain HTML/CSS/JS output, no
-client-side framework), hosted on GitHub Pages at `eatsharav.com`.
+Marketing site for Sharav, a Mizrahi Jewish food business launching at farmers markets in the
+Washington DC / Maryland area. Built with [Eleventy](https://www.11ty.dev/) (plain HTML/CSS/JS
+output, no client-side framework) and [Decap CMS](https://decapcms.org/) for self-service content
+editing, hosted on GitHub Pages at `eatsharav.com`.
 
 ## How it fits together
 
 - **Code**: this repo (`Ethanb00/sharav`), built with Eleventy.
-- **Homepage design & content**: designed visually at `/editor/` — a
-  [GrapesJS](https://grapesjs.com/) canvas that saves straight to `design/homepage.html` /
-  `design/homepage.css` in this repo via the GitHub API. Every homepage section (hero, menu,
-  schedule, etc.) is edited directly there — duplicate a card, edit text, drag things around. A
-  build step (`npm run sync-design`) turns that into `src/index.njk` +
-  `src/css/homepage-design.css` on every deploy; those two generated files are never hand-edited.
-- **Shared header/footer + Special Order page copy**: `src/_data/site.json` — business name,
-  tagline, Instagram, meta tags. Editable through `/admin` (Decap CMS) or directly.
-- **Special Order page** (`/special-order/`): a hand-coded pre-order calculator (running total,
-  per-size pricing, Web3Forms submission) — not part of the GrapesJS/design pipeline, since it's
-  application logic rather than layout.
+- **Content**: `src/_data/*.json` — menu items, the weekly market schedule, and site copy.
+  Editable directly, or through the `/admin` content manager (see below).
 - **Hosting**: GitHub Pages, deployed automatically by GitHub Actions on every push to `main`
-  (`.github/workflows/deploy.yml`), which runs `sync-design` before the Eleventy build.
+  (`.github/workflows/deploy.yml`).
 
 ## Structure
 
 ```
-design/               homepage.html / homepage.css — the GrapesJS source of truth (edit via /editor/)
-scripts/
-  sync-design.js       generates src/index.njk + src/css/homepage-design.css from design/ at build time
 src/
-  editor/              the GrapesJS homepage editor (index.html, config.js, github.js, editor.js)
-  admin/               Decap CMS, now scoped to just Site Settings (config.yml, index.html)
-  _data/site.json      business name, tagline, Instagram, meta — shared by nav/footer
-  _includes/           layouts/base.njk, partials/nav.njk + footer.njk
-  index.njk            generated — do not hand-edit, see design/homepage.html instead
-  css/style.css        shared shell styles (nav, footer, base typography/reset)
-  css/homepage-design.css   generated from design/homepage.css — do not hand-edit
-  special-order.njk, js/special-order.js, _data/specialOrder.json   the pre-order page, hand-coded
-  images/brand/        official logo, icon, brand-value icons — from the brand guidelines
-cms-oauth-worker/      the Cloudflare Worker both /admin and /editor use to log in with GitHub
-.github/workflows/     deploy.yml — sync-design, then Eleventy build, then publish to GitHub Pages
+  _data/            menu.json, schedule.json, site.json, values.json — all editable content
+  _includes/        layouts/base.njk, partials/nav.njk + footer.njk
+  index.njk         the one page, composed from the data above
+  admin/            Decap CMS (index.html + config.yml)
+  css/, js/         styles and the mobile-nav toggle
+  images/brand/     official logo, icon, brand-value icons, pattern — from the brand guidelines
+  images/dishes/    dish photos land here once they exist (referenced from menu.json)
+cms-oauth-worker/   the Cloudflare Worker that lets /admin log in with GitHub (see its README)
+.github/workflows/  deploy.yml — builds with Eleventy, publishes to GitHub Pages
 ```
 
-## Editing the homepage
+## Editing content
 
-Go to `https://eatsharav.com/editor/`, log in with GitHub, and edit the canvas directly —
-duplicate a dish card for a new item, edit schedule rows, restyle sections. Hit **Save to
-GitHub**; that commits `design/homepage.html`/`.css` straight to `main`, which triggers the
-Actions build (`sync-design` regenerates the real template, then Eleventy builds it) and the live
-site updates within a minute or two.
+**Self-service (once OAuth is set up — see `cms-oauth-worker/README.md`):** go to
+`https://eatsharav.com/admin/`, log in with GitHub, and edit Menu Items, Market Schedule, or Site
+Settings through plain forms. Publishing there commits straight to `main` and the site rebuilds
+automatically within a minute or two.
 
-There's no local install needed for this — it's a hosted page, same as `/admin`.
+**Directly:** edit the relevant file under `src/_data/` and push. Same rebuild happens either way.
 
-## Editing shared nav/footer copy or the Special Order catalog
+## What's still placeholder
 
-- **Site Settings** (business name, tagline, Instagram, meta tags): `https://eatsharav.com/admin/`,
-  or edit `src/_data/site.json` directly.
-- **Special Order pricing/copy**: edit `src/_data/specialOrder.json` directly (not in Decap CMS).
+- **Dish/booth photography** — every `menu.json` item has an empty `photo` field, so the site
+  shows a subtle branded placeholder card instead of a photo. Add photos via `/admin` (they land
+  in `src/images/dishes/`) or drop files in that folder and set the `photo` path manually.
+- **Market schedule** — `schedule.json` has two entries with blank `market`/`time` fields, which
+  render as "Market & time TBA." Fill them in via `/admin` or directly once markets are confirmed.
+- **Email** — `hello@eatsharav.com` is used based on the planned domain; confirm that inbox exists.
+
+There's a visible "site in progress" banner at the top of the page (`.placeholder-banner` in
+`base.njk`/`style.css`) — remove it once photography and the schedule are filled in.
+
+Colors, typography, and all logo/icon assets come directly from `Brand guidelines.pdf` and the
+official asset pack, not invented.
 
 ## Running locally
 
 ```bash
 npm install
-npm run sync-design   # regenerate src/index.njk + homepage-design.css from design/
-npm start              # eleventy --serve, live-reloads at http://localhost:8080
-npm run build          # one-off build to _site/
+npm start        # eleventy --serve, live-reloads at http://localhost:8080
+npm run build    # one-off build to _site/
 ```
 
 ## Deploying
 
-Push to `main` — GitHub Actions runs `sync-design` then builds and publishes automatically.
-One-time setup already done for this project, listed here for reference:
+Push to `main` — GitHub Actions builds and publishes automatically. One-time setup required in
+the repo (already done for this project, listed here for reference):
 
 1. **Settings → Pages → Build and deployment → Source**: set to `GitHub Actions` (not
    "Deploy from a branch").
 2. The `CNAME` file at the repo root keeps `eatsharav.com` working through the switch.
 
-## Setting up GitHub login (for /admin and /editor)
+## Setting up the CMS login
 
-Both the CMS and the homepage editor log in with GitHub through the same small proxy — see
-[`cms-oauth-worker/README.md`](cms-oauth-worker/README.md) for the one-time setup steps.
+The `/admin` content manager needs a small one-time OAuth setup so the site owner can log in with
+GitHub — see [`cms-oauth-worker/README.md`](cms-oauth-worker/README.md) for the exact steps.
