@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { productsV3 } from '@wix/stores';
 import { items } from '@wix/data';
 import { imgSrc } from '../lib/wix-media';
+import { MENU_BY_NAME } from '../data/menu';
 
 let products: any[] = [];
 try {
@@ -12,17 +13,9 @@ try {
 	console.error('Failed to load products', err);
 }
 
-// Presentation metadata per product — matched by name (cosmetic only; the price/name/
-// description/image themselves are always read live from Wix Stores above).
-const MENU_META: Record<string, { sku: string; eyebrow?: string; order: number; dark?: 'espresso' | 'olive' }> = {
-	Zhug: { sku: 'zhug', eyebrow: 'The hot one', order: 0 },
-	Hummus: { sku: 'hummus', order: 1 },
-	'Baba Ganoush': { sku: 'baba', order: 2 },
-	Muhammara: { sku: 'muhammara', order: 3 },
-	"Roasted Za'atar Carrot": { sku: 'carrot', eyebrow: 'Our signature dish', order: 4 },
-	Pita: { sku: 'pita', order: 5, dark: 'espresso' },
-	'Mint Tea': { sku: 'tea', order: 6, dark: 'olive' },
-};
+// Presentation content per product — matched by name (cosmetic only; the price/name/image
+// themselves are always read live from Wix Stores above; copy comes from ../data/menu).
+const MENU_META = MENU_BY_NAME;
 
 products = [...products]
 	.filter((p) => MENU_META[p.name])
@@ -121,7 +114,7 @@ function priceLine(p: any): string {
 							<div class="dish-body">
 								<h3>{p.name}</h3>
 								{meta.eyebrow && <div class={`dish-eyebrow ${meta.sku === 'zhug' ? 'mauve' : ''}`}>{meta.eyebrow}</div>}
-								<p class="dish-desc">{p.plainDescription}</p>
+								<p class="dish-desc">{meta.description}</p>
 								<div class="dish-price">{priceLine(p)}</div>
 								<button type="button" class="btn btn-rust add-to-order">Add to order</button>
 							</div>
@@ -138,7 +131,7 @@ function priceLine(p: any): string {
 									<h3>{p.name}</h3>
 									<div class="dish-dark-price">{priceLine(p)}</div>
 								</div>
-								<p class="dish-dark-desc">{p.plainDescription}</p>
+								<p class="dish-dark-desc">{meta.description}</p>
 								<button type="button" class="btn btn-cream-small add-to-order">Add to order</button>
 							</div>
 						);
