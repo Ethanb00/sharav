@@ -1,8 +1,1003 @@
 ---
-import Hero from '../components/Hero.astro';
 import Layout from '../layouts/Layout.astro';
+import { productsV3 } from '@wix/stores';
+import { items } from '@wix/data';
+import { imgSrc } from '../lib/wix-media';
+
+let products: any[] = [];
+try {
+	const res = await productsV3.queryProducts().limit(20).find();
+	products = res.items ?? [];
+} catch (err) {
+	console.error('Failed to load products', err);
+}
+
+// Cosmetic display order only — falls back to end-of-list for any product an owner
+// adds later, never hides or filters anything the live query returns.
+const ORDER: Record<string, number> = {
+	Zhug: 0,
+	Hummus: 1,
+	'Baba Ganoush': 2,
+	Muhammara: 3,
+	'Spiced Carrot Salad': 4,
+	'Pita (Two)': 5,
+	'Mint Tea': 6,
+};
+products = [...products].sort((a, b) => (ORDER[a.name] ?? 99) - (ORDER[b.name] ?? 99));
+
+let schedule: any[] = [];
+try {
+	const res = await items.query('market-schedule').ascending('order').find();
+	schedule = res.items ?? [];
+} catch (err) {
+	console.error('Failed to load market schedule', err);
+}
+
+const hummusProduct = products.find((p) => p.name === 'Hummus');
+const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) : '';
 ---
 
 <Layout>
-	<Hero />
+	<div class="placeholder-banner">Product photography is still being finalized for a few dishes below.</div>
+
+	<header class="site-header">
+		<div class="wrap header-inner">
+			<a href="/" class="wordmark" aria-label="Sharav home">
+				<img src="/images/brand/logo-h-terracotta.svg" alt="Sharav" class="wordmark-img" />
+			</a>
+			<nav class="site-nav" id="site-nav">
+				<a href="#food">Food</a>
+				<a href="#find">Find Us</a>
+				<a href="#story">Our Story</a>
+				<a href="#catering">Catering</a>
+				<a href="#order" class="nav-cta">Preorder · <span id="cart-count">0</span></a>
+			</nav>
+			<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+				<span></span><span></span><span></span>
+			</button>
+		</div>
+	</header>
+
+	<main>
+		<!-- Hero -->
+		<section class="hero">
+			<div class="wrap hero-inner">
+				<p class="eyebrow">Mizrahi Jewish pita &amp; mezze</p>
+				<h1>Farmers-market food, made the way it's always been made — in <span id="place-rotator">Olney</span></h1>
+				<p class="hero-sub">
+					Sharav brings vibrant, herb-bright Mizrahi cooking to farmers markets around the DC / Maryland area — hummus, zhug, and pita made fresh, sold in person, and now ready to preorder.
+				</p>
+				<div class="hero-actions">
+					<a href="#order" class="btn btn-primary">Preorder for pickup</a>
+					<a href="#find" class="btn btn-ghost">Find us at the market</a>
+				</div>
+			</div>
+			{heroImage && (
+				<div class="hero-image-wrap">
+					<img src={heroImage} alt="Sharav's house hummus" class="hero-image" />
+				</div>
+			)}
+		</section>
+
+		<!-- Food -->
+		<section id="food" class="section food">
+			<div class="wrap">
+				<p class="eyebrow center">On the table</p>
+				<h2 class="center">This week's menu</h2>
+				<p class="section-sub center">
+					Everything is made in small batches and sold by the piece — add what you want to your order below, then pick it up at the market.
+				</p>
+				<div class="food-grid">
+					{products.map((p) => {
+						const img = imgSrc(p.media?.main, 500, 500);
+						const price = p.actualPriceRange?.minValue?.amount ?? '0';
+						const isSignature = p.name === 'Spiced Carrot Salad';
+						return (
+							<div class="dish-card" data-sku={p._id} data-name={p.name} data-price={price}>
+								{img ? (
+									<img src={img} alt={p.name} class="dish-img" />
+								) : (
+									<div class="dish-img themed-block" data-label="Photo coming soon" />
+								)}
+								<div class="dish-card-body">
+									<div class="dish-card-head">
+										<h3>{p.name}</h3>
+										{isSignature && <span class="badge">Signature</span>}
+									</div>
+									<p class="dish-desc">{p.plainDescription}</p>
+									<div class="dish-card-foot">
+										<span class="dish-price">${Number(price).toFixed(2)}</span>
+										<button type="button" class="btn btn-dark btn-small add-to-order">Add to order</button>
+									</div>
+								</div>
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		</section>
+
+		<!-- Find us -->
+		<section id="find" class="section find-us">
+			<div class="wrap find-us-inner">
+				<div>
+					<p class="eyebrow">Find us</p>
+					<h2>Come say hello at the market</h2>
+					<p>
+						We're at the Olney Farmers Market most Saturdays through the season — look for the terracotta tent. Can't make it? Preorder below and we'll have it ready for pickup.
+					</p>
+					<div class="contact-grid">
+						<a href="tel:+12403088109" class="contact-card">
+							<span class="contact-label">Phone</span>
+							<span class="contact-value">(240) 308-8109</span>
+						</a>
+						<a href="mailto:hello@eatsharav.com" class="contact-card">
+							<span class="contact-label">Email</span>
+							<span class="contact-value">hello@eatsharav.com</span>
+						</a>
+					</div>
+				</div>
+				<div class="schedule-card">
+					<h3>This season's schedule</h3>
+					<ul class="schedule-list">
+						{schedule.length > 0 ? (
+							schedule.map((s) => (
+								<li>
+									<span class="schedule-day">{s.day}</span>
+									<span class="schedule-detail">{s.market}{s.time ? ` — ${s.time}` : ''}</span>
+								</li>
+							))
+						) : (
+							<li><span class="schedule-tba">Market schedule coming soon.</span></li>
+						)}
+					</ul>
+					<p class="schedule-note">Follow <a href="https://www.instagram.com/eatsharav" target="_blank" rel="noopener">@eatsharav</a> for schedule updates and pop-ups.</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Order / cart -->
+		<section id="order" class="section order-section">
+			<div class="wrap order-inner">
+				<div>
+					<p class="eyebrow">Preorder</p>
+					<h2>Skip the line — order ahead</h2>
+					<p class="section-sub">
+						Build your order from this week's menu, then pick it up at the market. We'll confirm by text or email — payment happens in person when you collect it.
+					</p>
+					<div class="cart-panel">
+						<h3>Your order</h3>
+						<ul class="cart-lines" id="cart-lines">
+							<li class="cart-empty" id="cart-empty">Nothing added yet — pick a few dishes above.</li>
+						</ul>
+						<div class="cart-total-row">
+							<span>Total</span>
+							<span id="cart-total">$0.00</span>
+						</div>
+					</div>
+				</div>
+
+				<form id="preorder-form" class="form-card" novalidate>
+					<div class="form-row">
+						<label for="preorder-name">Full Name</label>
+						<input type="text" id="preorder-name" name="full_name" required />
+					</div>
+					<div class="form-row-split">
+						<div class="form-row">
+							<label for="preorder-phone">Phone</label>
+							<input type="tel" id="preorder-phone" name="phone" placeholder="+1 240 555 0123" required />
+						</div>
+						<div class="form-row">
+							<label for="preorder-email">Email</label>
+							<input type="email" id="preorder-email" name="email" required />
+						</div>
+					</div>
+					<div class="form-row">
+						<label for="preorder-notes">Notes (optional)</label>
+						<textarea id="preorder-notes" name="notes" rows="2" placeholder="Pickup time preference, allergies, etc."></textarea>
+					</div>
+					<button type="submit" class="btn btn-primary form-submit">Submit Pre-Order</button>
+					<p class="form-status" id="preorder-status" role="status"></p>
+				</form>
+			</div>
+		</section>
+
+		<!-- Story -->
+		<section id="story" class="section story">
+			<div class="wrap story-inner">
+				<img src="/images/photo-ethan.jpg" alt="Ethan, Sharav's founder, in the kitchen" class="story-img" />
+				<div class="story-copy">
+					<p class="eyebrow">Our story</p>
+					<h2>What "sharav" means</h2>
+					<p>
+						In Hebrew, <em>sharav</em> is the hot, dry desert wind that sweeps in from the east — the same wind known as the khamsin in Egypt, the sirocco in the Mediterranean, the ghibli in Libya, and the harmattan across West Africa. It's a wind that shows up in every culture along its path, carrying a little of each place with it.
+					</p>
+					<p>
+						That's the idea behind this food. Mizrahi Jewish cooking — the cuisine of Jewish communities from Iraq, Yemen, Syria, Persia, and across North Africa — has always carried influences across borders, absorbing and reshaping flavors the way sharav moves across a map. Every jar of zhug and every round of pita on this table is Ethan's attempt to bring that same cross-cultural warmth to a farmers market table in Maryland.
+					</p>
+					<p class="mission">Hospitality first, heritage always, and a plate that starts a conversation.</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Newsletter (mid-page) -->
+		<section class="section newsletter-mid">
+			<div class="wrap newsletter-inner">
+				<div>
+					<p class="eyebrow">Stay in the loop</p>
+					<h2>Get market dates in your inbox</h2>
+					<p class="section-sub">One short email whenever we confirm a new market date or a new dish.</p>
+				</div>
+				<form class="newsletter-form" data-newsletter-form novalidate>
+					<input type="email" name="email" placeholder="you@example.com" required aria-label="Email address" />
+					<button type="submit" class="btn btn-dark">Subscribe</button>
+				</form>
+				<p class="form-status" data-newsletter-status role="status"></p>
+			</div>
+		</section>
+
+		<!-- Catering -->
+		<section id="catering" class="section catering">
+			<div class="wrap catering-inner">
+				<div>
+					<p class="eyebrow">Catering</p>
+					<h2>Bring Sharav to your event</h2>
+					<p>
+						From office lunches to backyard gatherings, we build catering spreads around the same mezze on this menu — scaled up, plated your way. Tell us about your event and we'll follow up with a quote.
+					</p>
+				</div>
+				<form id="catering-form" class="form-card" novalidate>
+					<div class="form-row">
+						<label for="catering-name">Full Name</label>
+						<input type="text" id="catering-name" name="full_name" required />
+					</div>
+					<div class="form-row">
+						<label for="catering-email">Email</label>
+						<input type="email" id="catering-email" name="email" required />
+					</div>
+					<div class="form-row-split">
+						<div class="form-row">
+							<label for="catering-date">Event Date</label>
+							<input type="date" id="catering-date" name="event_date" required />
+						</div>
+						<div class="form-row">
+							<label for="catering-guests">Number of Guests</label>
+							<input type="number" id="catering-guests" name="guest_count" min="1" required />
+						</div>
+					</div>
+					<div class="form-row">
+						<label for="catering-occasion">Tell us about your event</label>
+						<textarea id="catering-occasion" name="occasion" rows="3" required></textarea>
+					</div>
+					<button type="submit" class="btn btn-primary form-submit">Request Quote</button>
+					<p class="form-status" id="catering-status" role="status"></p>
+				</form>
+			</div>
+		</section>
+
+		<!-- FAQ -->
+		<section class="section faq">
+			<div class="wrap">
+				<p class="eyebrow center">Questions</p>
+				<h2 class="center">Good to know</h2>
+				<div class="faq-list">
+					<details class="faq-item">
+						<summary>How does preordering work?</summary>
+						<p>Add dishes to your order above, submit your contact info, and we'll confirm your pickup window by text or email. Payment happens in person at the market when you pick up.</p>
+					</details>
+					<details class="faq-item">
+						<summary>Is everything nut-free / vegetarian?</summary>
+						<p>Most of the menu is vegetarian, but muhammara contains walnuts. Add any allergies or dietary notes to your order and we'll flag anything to watch for.</p>
+					</details>
+					<details class="faq-item">
+						<summary>Do you take custom orders for events?</summary>
+						<p>Yes — see the catering section above. Tell us the date, headcount, and occasion, and we'll send a quote.</p>
+					</details>
+					<details class="faq-item">
+						<summary>Where can I find your schedule?</summary>
+						<p>Check the Find Us section on this page, or follow <a href="https://www.instagram.com/eatsharav" target="_blank" rel="noopener">@eatsharav</a> — we post updates there first.</p>
+					</details>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<img src="/images/brand/ill-4-terracotta.svg" alt="" class="footer-illustration" aria-hidden="true" />
+		<div class="wrap">
+			<div class="footer-top">
+				<div>
+					<img src="/images/brand/logo-h-cream.svg" alt="Sharav" class="footer-brand-wordmark" />
+					<p>Mizrahi Jewish pita &amp; mezze at farmers markets around DC &amp; Maryland.</p>
+					<form class="newsletter-form footer-newsletter-form" data-newsletter-form novalidate>
+						<input type="email" name="email" placeholder="you@example.com" required aria-label="Email address" />
+						<button type="submit" class="btn btn-ghost">Subscribe</button>
+					</form>
+					<p class="form-status" data-newsletter-status role="status"></p>
+				</div>
+				<nav class="footer-nav">
+					<a href="#food">Food</a>
+					<a href="#find">Find Us</a>
+					<a href="#story">Our Story</a>
+					<a href="#catering">Catering</a>
+					<a href="https://www.instagram.com/eatsharav" target="_blank" rel="noopener">Instagram</a>
+				</nav>
+			</div>
+			<div class="footer-bottom">
+				<p>&copy; {new Date().getFullYear()} Sharav. All rights reserved.</p>
+				<p>(240) 308-8109 · hello@eatsharav.com</p>
+			</div>
+		</div>
+	</footer>
 </Layout>
+
+<style>
+	.placeholder-banner {
+		background: var(--espresso);
+		color: var(--cream);
+		text-align: center;
+		font-size: 0.82rem;
+		padding: 8px 16px;
+	}
+	.center {
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.food h2.center,
+	.food p.center {
+		max-width: 640px;
+	}
+
+	/* Hero */
+	.hero {
+		position: relative;
+		background: var(--rust);
+		color: var(--cream);
+		padding: 72px 0 0;
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: 1.1fr 0.9fr;
+		align-items: end;
+		gap: 24px;
+	}
+	.hero-inner {
+		padding-bottom: 72px;
+	}
+	.hero .eyebrow {
+		color: var(--white);
+	}
+	.hero h1 {
+		color: var(--white);
+	}
+	.hero-sub {
+		font-size: 1.05rem;
+		color: #eedfc9;
+		max-width: 520px;
+	}
+	.hero-actions {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin-top: 28px;
+	}
+	.hero-image-wrap {
+		align-self: end;
+		max-height: 480px;
+		overflow: hidden;
+		border-top-left-radius: 24px;
+	}
+	.hero-image {
+		width: 100%;
+		height: 480px;
+		object-fit: cover;
+	}
+	@media (max-width: 900px) {
+		.hero {
+			grid-template-columns: 1fr;
+		}
+		.hero-image-wrap {
+			border-radius: 0;
+		}
+		.hero-image {
+			height: 280px;
+		}
+	}
+
+	/* Food grid */
+	.food {
+		background: var(--white);
+	}
+	.food-grid {
+		margin-top: 48px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 28px;
+	}
+	.dish-card {
+		text-align: left;
+		background: var(--cream);
+		border-radius: 16px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+	.dish-img {
+		width: 100%;
+		height: 180px;
+		object-fit: cover;
+	}
+	.dish-card-body {
+		padding: 18px 20px 20px;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+	.dish-card-head {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.dish-card-head h3 {
+		margin-bottom: 0;
+	}
+	.badge {
+		background: var(--gold);
+		color: var(--espresso);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		padding: 3px 9px;
+		border-radius: 999px;
+	}
+	.dish-desc {
+		color: #6b5738;
+		font-size: 0.92rem;
+		margin: 8px 0 16px;
+		flex: 1;
+	}
+	.dish-card-foot {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.dish-price {
+		font-weight: 700;
+		color: var(--rust);
+		font-size: 1.05rem;
+	}
+	.btn-small {
+		padding: 8px 16px;
+		font-size: 0.85rem;
+	}
+
+	/* Find us */
+	.find-us-inner {
+		display: grid;
+		grid-template-columns: 1.1fr 0.9fr;
+		gap: 48px;
+		align-items: start;
+	}
+	.contact-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+		margin-top: 24px;
+		max-width: 420px;
+	}
+	.contact-card {
+		background: var(--white);
+		border-radius: 14px;
+		padding: 18px;
+		text-align: center;
+		box-shadow: 0 8px 20px rgba(65, 46, 21, 0.06);
+	}
+	.contact-label {
+		display: block;
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--rust);
+		font-weight: 700;
+		margin-bottom: 6px;
+	}
+	.contact-value {
+		display: block;
+		font-weight: 600;
+	}
+	.schedule-card {
+		background: var(--white);
+		border-radius: 16px;
+		padding: 32px;
+		box-shadow: 0 12px 30px rgba(65, 46, 21, 0.08);
+	}
+	.schedule-list {
+		list-style: none;
+		margin: 16px 0;
+		padding: 0;
+	}
+	.schedule-list li {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--cream-dark);
+		font-weight: 600;
+	}
+	.schedule-list li:last-child {
+		border-bottom: none;
+	}
+	.schedule-day {
+		color: var(--rust);
+	}
+	.schedule-detail {
+		font-weight: 500;
+		font-size: 0.9rem;
+		text-align: right;
+	}
+	.schedule-tba {
+		color: #9c8258;
+		font-weight: 500;
+	}
+	.schedule-note {
+		font-size: 0.85rem;
+		color: #9c8258;
+		margin: 0;
+	}
+
+	/* Order */
+	.order-section {
+		background: var(--cream-dark);
+	}
+	.order-inner {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 48px;
+		align-items: start;
+	}
+	.cart-panel {
+		background: var(--white);
+		border-radius: 16px;
+		padding: 24px;
+		margin-top: 24px;
+		box-shadow: 0 8px 20px rgba(65, 46, 21, 0.06);
+	}
+	.cart-lines {
+		list-style: none;
+		margin: 12px 0;
+		padding: 0;
+	}
+	.cart-lines li {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 8px 0;
+		font-size: 0.92rem;
+	}
+	.cart-empty {
+		color: #9c8258;
+	}
+	.cart-line-remove {
+		background: none;
+		border: none;
+		color: var(--rust);
+		cursor: pointer;
+		font-size: 0.82rem;
+		text-decoration: underline;
+	}
+	.cart-total-row {
+		display: flex;
+		justify-content: space-between;
+		font-weight: 700;
+		border-top: 1px solid var(--cream-dark);
+		padding-top: 12px;
+		margin-top: 4px;
+	}
+
+	.form-card {
+		background: var(--white);
+		border-radius: 16px;
+		padding: 28px;
+		box-shadow: 0 12px 30px rgba(65, 46, 21, 0.08);
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.form-row {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.form-row-split {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+	}
+	.form-row label {
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: var(--espresso);
+	}
+	.form-row input,
+	.form-row textarea {
+		font-family: var(--font-body);
+		font-size: 0.95rem;
+		padding: 10px 12px;
+		border: 1.5px solid var(--cream-dark);
+		border-radius: 8px;
+		background: var(--cream);
+		color: var(--espresso);
+	}
+	.form-row input:focus,
+	.form-row textarea:focus {
+		outline: 2px solid var(--gold);
+		outline-offset: 1px;
+	}
+	.form-submit {
+		width: 100%;
+	}
+	.form-status {
+		min-height: 1.2em;
+		font-size: 0.88rem;
+		font-weight: 600;
+		margin: 0;
+	}
+	.form-status.success {
+		color: var(--olive);
+	}
+	.form-status.error {
+		color: var(--rust);
+	}
+
+	@media (max-width: 860px) {
+		.order-inner,
+		.find-us-inner {
+			grid-template-columns: 1fr;
+		}
+		.food-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (max-width: 640px) {
+		.food-grid {
+			grid-template-columns: 1fr;
+		}
+		.form-row-split,
+		.contact-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Story */
+	.story-inner {
+		display: grid;
+		grid-template-columns: 0.85fr 1.15fr;
+		gap: 56px;
+		align-items: center;
+	}
+	.story-img {
+		border-radius: 16px;
+		width: 100%;
+		height: 420px;
+		object-fit: cover;
+	}
+	.story-copy p:not(.eyebrow) {
+		color: #5a4526;
+	}
+	.mission {
+		font-style: italic;
+		font-weight: 500;
+		font-size: 1.05rem;
+		color: var(--espresso) !important;
+		border-left: 3px solid var(--gold);
+		padding-left: 18px;
+		margin-top: 24px;
+	}
+	@media (max-width: 860px) {
+		.story-inner {
+			grid-template-columns: 1fr;
+		}
+		.story-img {
+			height: 300px;
+		}
+	}
+
+	/* Newsletter mid */
+	.newsletter-mid {
+		background: var(--white);
+	}
+	.newsletter-inner {
+		max-width: 640px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	.newsletter-form {
+		display: flex;
+		gap: 12px;
+		margin-top: 20px;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	.newsletter-form input {
+		font-family: var(--font-body);
+		padding: 12px 16px;
+		border-radius: 999px;
+		border: 1.5px solid var(--cream-dark);
+		min-width: 260px;
+		flex: 1;
+		max-width: 320px;
+	}
+	.footer-newsletter-form {
+		justify-content: flex-start;
+		margin-top: 16px;
+	}
+	.footer-newsletter-form input {
+		background: rgba(237, 226, 211, 0.08);
+		border-color: rgba(203, 177, 135, 0.4);
+		color: var(--cream);
+	}
+	.footer-newsletter-form input::placeholder {
+		color: #a68a63;
+	}
+	.site-footer .form-status {
+		color: #d8c9a5;
+	}
+
+	/* Catering */
+	.catering {
+		background: var(--rust);
+		color: var(--cream);
+	}
+	.catering .eyebrow {
+		color: var(--white);
+	}
+	.catering h2 {
+		color: var(--white);
+	}
+	.catering-inner {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 48px;
+		align-items: start;
+	}
+	@media (max-width: 860px) {
+		.catering-inner {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* FAQ */
+	.faq-list {
+		max-width: 720px;
+		margin: 40px auto 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.faq-item {
+		background: var(--white);
+		border-radius: 12px;
+		padding: 16px 20px;
+	}
+	.faq-item summary {
+		cursor: pointer;
+		font-weight: 600;
+	}
+	.faq-item p {
+		margin: 12px 0 0;
+		color: #6b5738;
+	}
+</style>
+
+<script>
+	// --- Mobile nav toggle ---
+	const navToggle = document.getElementById('nav-toggle');
+	const siteNav = document.getElementById('site-nav');
+	navToggle?.addEventListener('click', () => {
+		const open = siteNav?.classList.toggle('open');
+		navToggle.setAttribute('aria-expanded', String(!!open));
+	});
+
+	// --- Rotating place name in the hero ---
+	const PLACES = ['Olney', 'Silver Spring', 'Rockville', 'Bethesda', 'Takoma Park', 'Kensington', 'Wheaton', 'Washington, DC'];
+	const placeEl = document.getElementById('place-rotator');
+	if (placeEl) {
+		let i = 0;
+		setInterval(() => {
+			i = (i + 1) % PLACES.length;
+			placeEl.textContent = PLACES[i];
+		}, 2400);
+	}
+
+	// --- Cart (client-side only; product data sourced live from Wix Stores at render time) ---
+	type CartLine = { sku: string; name: string; price: number; qty: number };
+	const CART_KEY = 'sharav-cart';
+
+	function loadCart(): CartLine[] {
+		try {
+			return JSON.parse(localStorage.getItem(CART_KEY) ?? '[]');
+		} catch {
+			return [];
+		}
+	}
+	function saveCart(cart: CartLine[]) {
+		localStorage.setItem(CART_KEY, JSON.stringify(cart));
+	}
+	function renderCart() {
+		const cart = loadCart();
+		const linesEl = document.getElementById('cart-lines');
+		const emptyEl = document.getElementById('cart-empty');
+		const totalEl = document.getElementById('cart-total');
+		const countEl = document.getElementById('cart-count');
+		if (!linesEl || !totalEl || !countEl) return;
+
+		linesEl.querySelectorAll('[data-cart-line]').forEach((el) => el.remove());
+		let total = 0;
+		let count = 0;
+		for (const line of cart) {
+			total += line.price * line.qty;
+			count += line.qty;
+			const li = document.createElement('li');
+			li.setAttribute('data-cart-line', line.sku);
+			li.innerHTML = `<span>${line.qty}× ${line.name}</span><span>$${(line.price * line.qty).toFixed(2)} <button type="button" class="cart-line-remove" data-remove="${line.sku}">remove</button></span>`;
+			linesEl.appendChild(li);
+		}
+		if (emptyEl) emptyEl.style.display = cart.length ? 'none' : '';
+		totalEl.textContent = `$${total.toFixed(2)}`;
+		countEl.textContent = String(count);
+
+		linesEl.querySelectorAll('[data-remove]').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const sku = (btn as HTMLElement).getAttribute('data-remove');
+				saveCart(loadCart().filter((l) => l.sku !== sku));
+				renderCart();
+			});
+		});
+	}
+
+	document.querySelectorAll('.add-to-order').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const card = btn.closest('[data-sku]') as HTMLElement | null;
+			if (!card) return;
+			const sku = card.dataset.sku!;
+			const name = card.dataset.name!;
+			const price = Number(card.dataset.price ?? '0');
+			const cart = loadCart();
+			const existing = cart.find((l) => l.sku === sku);
+			if (existing) existing.qty += 1;
+			else cart.push({ sku, name, price, qty: 1 });
+			saveCart(cart);
+			renderCart();
+			btn.textContent = 'Added ✓';
+			setTimeout(() => {
+				btn.textContent = 'Add to order';
+			}, 900);
+		});
+	});
+
+	renderCart();
+
+	function cartSummaryText(): string {
+		const cart = loadCart();
+		if (!cart.length) return '';
+		const lines = cart.map((l) => `${l.qty}x ${l.name} ($${(l.price * l.qty).toFixed(2)})`);
+		const total = cart.reduce((sum, l) => sum + l.price * l.qty, 0);
+		return `${lines.join(', ')} — Total: $${total.toFixed(2)}`;
+	}
+
+	// --- Pre-order form ---
+	const preorderForm = document.getElementById('preorder-form') as HTMLFormElement | null;
+	const preorderStatus = document.getElementById('preorder-status');
+	preorderForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const summary = cartSummaryText();
+		if (!summary) {
+			if (preorderStatus) {
+				preorderStatus.textContent = 'Add at least one dish to your order first.';
+				preorderStatus.className = 'form-status error';
+			}
+			return;
+		}
+		const fd = new FormData(preorderForm);
+		const body = {
+			full_name: fd.get('full_name'),
+			phone: fd.get('phone'),
+			email: fd.get('email'),
+			notes: fd.get('notes'),
+			order_summary: summary,
+		};
+		if (preorderStatus) {
+			preorderStatus.textContent = 'Sending…';
+			preorderStatus.className = 'form-status';
+		}
+		try {
+			const res = await fetch('/api/preorder', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			if (!res.ok) throw new Error('failed');
+			saveCart([]);
+			renderCart();
+			preorderForm.reset();
+			if (preorderStatus) {
+				preorderStatus.textContent = "Thanks! We've got your pre-order and will see you at the market.";
+				preorderStatus.className = 'form-status success';
+			}
+		} catch {
+			if (preorderStatus) {
+				preorderStatus.textContent = 'Something went wrong — please try again or call us.';
+				preorderStatus.className = 'form-status error';
+			}
+		}
+	});
+
+	// --- Catering form ---
+	const cateringForm = document.getElementById('catering-form') as HTMLFormElement | null;
+	const cateringStatus = document.getElementById('catering-status');
+	cateringForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const fd = new FormData(cateringForm);
+		const body = {
+			full_name: fd.get('full_name'),
+			email: fd.get('email'),
+			event_date: fd.get('event_date'),
+			guest_count: fd.get('guest_count'),
+			occasion: fd.get('occasion'),
+		};
+		if (cateringStatus) {
+			cateringStatus.textContent = 'Sending…';
+			cateringStatus.className = 'form-status';
+		}
+		try {
+			const res = await fetch('/api/catering', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			if (!res.ok) throw new Error('failed');
+			cateringForm.reset();
+			if (cateringStatus) {
+				cateringStatus.textContent = "Thanks! We'll follow up with a catering quote soon.";
+				cateringStatus.className = 'form-status success';
+			}
+		} catch {
+			if (cateringStatus) {
+				cateringStatus.textContent = 'Something went wrong — please try again or email us.';
+				cateringStatus.className = 'form-status error';
+			}
+		}
+	});
+
+	// --- Newsletter forms (mid-page + footer, same endpoint) ---
+	document.querySelectorAll('[data-newsletter-form]').forEach((form) => {
+		const statusEl = form.parentElement?.querySelector('[data-newsletter-status]');
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const fd = new FormData(form as HTMLFormElement);
+			if (statusEl) {
+				statusEl.textContent = 'Sending…';
+				statusEl.className = 'form-status';
+			}
+			try {
+				const res = await fetch('/api/newsletter', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email: fd.get('email') }),
+				});
+				if (!res.ok) throw new Error('failed');
+				(form as HTMLFormElement).reset();
+				if (statusEl) {
+					statusEl.textContent = "You're on the list!";
+					statusEl.className = 'form-status success';
+				}
+			} catch {
+				if (statusEl) {
+					statusEl.textContent = 'Something went wrong — please try again.';
+					statusEl.className = 'form-status error';
+				}
+			}
+		});
+	});
+</script>
