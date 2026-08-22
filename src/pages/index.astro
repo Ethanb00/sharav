@@ -32,8 +32,10 @@ try {
 	console.error('Failed to load market schedule', err);
 }
 
-const hummusProduct = products.find((p) => p.name === 'Hummus');
-const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 900, 900) : '';
+// Fixed hero photo — a standalone Wix Media asset, independent of the Hummus product's
+// catalog image (that one keeps coming live from Wix Stores in the dish grid below).
+const HERO_IMAGE_ID = 'wix:image://v1/9647c1_3bfc5b48f34c4941a07d3c5410f598bc~mv2.jpg/photo-hummus.jpg#originWidth=2475&originHeight=3094';
+const heroImage = imgSrc(HERO_IMAGE_ID, 900, 900);
 
 function priceLine(p: any): string {
 	const amount = Number(p.actualPriceRange?.minValue?.amount ?? 0);
