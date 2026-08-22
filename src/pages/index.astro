@@ -12,18 +12,24 @@ try {
 	console.error('Failed to load products', err);
 }
 
-// Cosmetic display order only — falls back to end-of-list for any product an owner
-// adds later, never hides or filters anything the live query returns.
-const ORDER: Record<string, number> = {
-	Zhug: 0,
-	Hummus: 1,
-	'Baba Ganoush': 2,
-	Muhammara: 3,
-	'Spiced Carrot Salad': 4,
-	'Pita (Two)': 5,
-	'Mint Tea': 6,
+// Presentation metadata per product — matched by name (cosmetic only; the price/name/
+// description/image themselves are always read live from Wix Stores above).
+const MENU_META: Record<string, { sku: string; eyebrow?: string; order: number; dark?: 'espresso' | 'olive' }> = {
+	Zhug: { sku: 'zhug', eyebrow: 'The hot one', order: 0 },
+	Hummus: { sku: 'hummus', order: 1 },
+	'Baba Ganoush': { sku: 'baba', order: 2 },
+	Muhammara: { sku: 'muhammara', order: 3 },
+	"Roasted Za'atar Carrot": { sku: 'carrot', eyebrow: 'Our signature dish', order: 4 },
+	Pita: { sku: 'pita', order: 5, dark: 'espresso' },
+	'Mint Tea': { sku: 'tea', order: 6, dark: 'olive' },
 };
-products = [...products].sort((a, b) => (ORDER[a.name] ?? 99) - (ORDER[b.name] ?? 99));
+
+products = [...products]
+	.filter((p) => MENU_META[p.name])
+	.sort((a, b) => MENU_META[a.name].order - MENU_META[b.name].order);
+
+const mainDishes = products.filter((p) => !MENU_META[p.name].dark);
+const darkDishes = products.filter((p) => MENU_META[p.name].dark);
 
 let schedule: any[] = [];
 try {
@@ -34,779 +40,1210 @@ try {
 }
 
 const hummusProduct = products.find((p) => p.name === 'Hummus');
-const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) : '';
+const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 900, 900) : '';
+
+function priceLine(p: any): string {
+	const amount = Number(p.actualPriceRange?.minValue?.amount ?? 0);
+	const suffix: Record<string, string> = {
+		zhug: '6 oz',
+		hummus: '8 oz',
+		baba: '8 oz',
+		muhammara: '8 oz',
+		carrot: '8 oz',
+		pita: 'two',
+		tea: '',
+	};
+	const sku = MENU_META[p.name]?.sku ?? '';
+	const s = suffix[sku];
+	return s ? `$${amount.toFixed(0)} · ${s}` : `$${amount.toFixed(0)}`;
+}
 ---
 
 <Layout>
-	<div class="placeholder-banner">Product photography is still being finalized for a few dishes below.</div>
-
 	<header class="site-header">
 		<div class="wrap header-inner">
-			<a href="/" class="wordmark" aria-label="Sharav home">
-				<img src="/images/brand/logo-h-terracotta.svg" alt="Sharav" class="wordmark-img" />
+			<a href="#top" aria-label="Sharav home">
+				<img src="/images/brand/logo-h-terracotta.svg" alt="Sharav - Mizrahi Cuisine" class="wordmark-img" />
 			</a>
-			<nav class="site-nav" id="site-nav">
-				<a href="#food">Food</a>
+			<nav class="site-nav">
+				<a href="#food">The Food</a>
 				<a href="#find">Find Us</a>
 				<a href="#story">Our Story</a>
 				<a href="#catering">Catering</a>
 				<a href="#order" class="nav-cta">Preorder · <span id="cart-count">0</span></a>
 			</nav>
-			<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
-				<span></span><span></span><span></span>
-			</button>
 		</div>
 	</header>
 
 	<main>
 		<!-- Hero -->
-		<section class="hero">
-			<div class="wrap hero-inner">
-				<p class="eyebrow">Mizrahi Jewish pita &amp; mezze</p>
-				<h1>Farmers-market food, made the way it's always been made — in <span id="place-rotator">Olney</span></h1>
-				<p class="hero-sub">
-					Sharav brings vibrant, herb-bright Mizrahi cooking to farmers markets around the DC / Maryland area — hummus, zhug, and pita made fresh, sold in person, and now ready to preorder.
-				</p>
+		<section id="top" class="hero">
+			<div class="hero-copy">
+				<h1>The heritage and warmth of Mizrahi cooking, fresh in <span id="place-rotator">Olney</span></h1>
+				<p class="hero-sub">Small-batch Mizrahi dishes, made by hand each week.</p>
 				<div class="hero-actions">
-					<a href="#order" class="btn btn-primary">Preorder for pickup</a>
-					<a href="#find" class="btn btn-ghost">Find us at the market</a>
+					<a href="#order" class="btn btn-cream">Preorder for pickup</a>
+					<a href="#find" class="btn btn-outline-cream">Find us at the market</a>
 				</div>
+				<div class="hero-tag">Greater Washington, DC Area</div>
 			</div>
-			{heroImage && (
-				<div class="hero-image-wrap">
-					<img src={heroImage} alt="Sharav's house hummus" class="hero-image" />
-				</div>
-			)}
+			<div class="hero-img">
+				{heroImage && <img src={heroImage} alt="Hummus with olive oil, sumac and pine nuts" />}
+			</div>
 		</section>
 
 		<!-- Food -->
-		<section id="food" class="section food">
-			<div class="wrap">
-				<p class="eyebrow center">On the table</p>
-				<h2 class="center">This week's menu</h2>
-				<p class="section-sub center">
-					Everything is made in small batches and sold by the piece — add what you want to your order below, then pick it up at the market.
-				</p>
-				<div class="food-grid">
-					{products.map((p) => {
-						const img = imgSrc(p.media?.main, 500, 500);
-						const price = p.actualPriceRange?.minValue?.amount ?? '0';
-						const isSignature = p.name === 'Spiced Carrot Salad';
-						return (
-							<div class="dish-card" data-sku={p._id} data-name={p.name} data-price={price}>
-								{img ? (
-									<img src={img} alt={p.name} class="dish-img" />
-								) : (
-									<div class="dish-img themed-block" data-label="Photo coming soon" />
-								)}
-								<div class="dish-card-body">
-									<div class="dish-card-head">
-										<h3>{p.name}</h3>
-										{isSignature && <span class="badge">Signature</span>}
-									</div>
-									<p class="dish-desc">{p.plainDescription}</p>
-									<div class="dish-card-foot">
-										<span class="dish-price">${Number(price).toFixed(2)}</span>
-										<button type="button" class="btn btn-dark btn-small add-to-order">Add to order</button>
-									</div>
+		<section id="food" class="wrap food-section">
+			<div class="food-head">
+				<div class="food-head-copy">
+					<div class="eyebrow">The Food</div>
+					<h2 class="h2">Five recipes, made well, made often</h2>
+					<p class="body-olive">
+						Everything is made fresh each week in small batches. Come taste before you buy — there's a different spread out for sampling every market.
+					</p>
+				</div>
+				<a href="#order" class="preorder-link">Pre-order for pickup</a>
+			</div>
+
+			<div class="food-grid">
+				{mainDishes.map((p) => {
+					const meta = MENU_META[p.name];
+					const img = imgSrc(p.media?.main, 500, 460);
+					return (
+						<article class="dish-card" data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'}>
+							{img ? (
+								<img src={img} alt={p.name} class="dish-img" />
+							) : (
+								<div class="dish-img dish-img-placeholder">
+									<div class="placeholder-label">Photo coming soon</div>
 								</div>
+							)}
+							<div class="dish-body">
+								<h3>{p.name}</h3>
+								{meta.eyebrow && <div class={`dish-eyebrow ${meta.sku === 'zhug' ? 'mauve' : ''}`}>{meta.eyebrow}</div>}
+								<p class="dish-desc">{p.plainDescription}</p>
+								<div class="dish-price">{priceLine(p)}</div>
+								<button type="button" class="btn btn-rust add-to-order">Add to order</button>
+							</div>
+						</article>
+					);
+				})}
+
+				<article class="dish-stack">
+					{darkDishes.map((p) => {
+						const meta = MENU_META[p.name];
+						return (
+							<div class={`dish-dark dish-dark-${meta.dark}`} data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'}>
+								<div class="dish-dark-head">
+									<h3>{p.name}</h3>
+									<div class="dish-dark-price">{priceLine(p)}</div>
+								</div>
+								<p class="dish-dark-desc">{p.plainDescription}</p>
+								<button type="button" class="btn btn-cream-small add-to-order">Add to order</button>
 							</div>
 						);
 					})}
-				</div>
+				</article>
 			</div>
 		</section>
 
 		<!-- Find us -->
-		<section id="find" class="section find-us">
-			<div class="wrap find-us-inner">
-				<div>
-					<p class="eyebrow">Find us</p>
-					<h2>Come say hello at the market</h2>
-					<p>
-						We're at the Olney Farmers Market most Saturdays through the season — look for the terracotta tent. Can't make it? Preorder below and we'll have it ready for pickup.
+		<section id="find" class="find-section">
+			<div class="wrap find-inner">
+				<div class="find-copy">
+					<div class="eyebrow gold">Find Us</div>
+					<h2 class="h2 cream">Come taste it.</h2>
+					<p class="body-cream">
+						You'll find us at the Olney Farmers Market. Everything is made the day before, so come early for the full lineup, and there's a spread out for sampling every week.
 					</p>
-					<div class="contact-grid">
-						<a href="tel:+12403088109" class="contact-card">
-							<span class="contact-label">Phone</span>
-							<span class="contact-value">(240) 308-8109</span>
-						</a>
-						<a href="mailto:hello@eatsharav.com" class="contact-card">
-							<span class="contact-label">Email</span>
-							<span class="contact-value">hello@eatsharav.com</span>
-						</a>
+					<div class="find-contact">
+						<div class="eyebrow gold small">Questions before you come</div>
+						<div><a href="tel:+12403088109" class="contact-link">(240) 308-8109</a></div>
+						<div><a href="mailto:hello@eatsharav.com" class="contact-link">hello@eatsharav.com</a></div>
 					</div>
 				</div>
-				<div class="schedule-card">
-					<h3>This season's schedule</h3>
-					<ul class="schedule-list">
-						{schedule.length > 0 ? (
-							schedule.map((s) => (
-								<li>
-									<span class="schedule-day">{s.day}</span>
-									<span class="schedule-detail">{s.market}{s.time ? ` — ${s.time}` : ''}</span>
-								</li>
-							))
-						) : (
-							<li><span class="schedule-tba">Market schedule coming soon.</span></li>
-						)}
-					</ul>
-					<p class="schedule-note">Follow <a href="https://www.instagram.com/eatsharav" target="_blank" rel="noopener">@eatsharav</a> for schedule updates and pop-ups.</p>
+				<div class="schedule">
+					<div class="schedule-head">
+						<div class="eyebrow gold small">This season's schedule</div>
+						<div class="confirm-pill">Confirm dates</div>
+					</div>
+					{schedule.length > 0 ? (
+						schedule.map((s) => (
+							<div class="schedule-row">
+								<div>
+									<div class="schedule-name">{s.market}</div>
+									<div class="schedule-sub">{s.day}</div>
+								</div>
+								<div class="schedule-time">{s.time}</div>
+							</div>
+						))
+					) : (
+						<div class="schedule-row"><div class="schedule-name">Schedule coming soon</div></div>
+					)}
 				</div>
 			</div>
 		</section>
 
-		<!-- Order / cart -->
-		<section id="order" class="section order-section">
-			<div class="wrap order-inner">
-				<div>
-					<p class="eyebrow">Preorder</p>
-					<h2>Skip the line — order ahead</h2>
-					<p class="section-sub">
-						Build your order from this week's menu, then pick it up at the market. We'll confirm by text or email — payment happens in person when you collect it.
+		<!-- Order -->
+		<section id="order" class="wrap order-section">
+			<div class="order-copy">
+				<div class="eyebrow">Order</div>
+				<h2 class="h2">Pre-order for pickup</h2>
+				<p class="body-olive">
+					Send your order and pick it up at the Olney Farmers Market on Sunday, 9AM to 1PM, or the following Monday at a location in North Bethesda.
+				</p>
+				<div class="how-it-works">
+					<div class="eyebrow olive small">How it works</div>
+					<p>Send the order and we reply to confirm what's available and what it comes to. Pay when you pick it up.</p>
+				</div>
+				<div class="good-to-know">
+					<div class="eyebrow small">Good to know</div>
+					<p class="body-olive">
+						Every container is marked with a best-by date — keep it refrigerated and use your own judgment from there. Made in a kitchen that handles sesame, walnuts and pistachios. Zhug is the only hot one.
 					</p>
-					<div class="cart-panel">
-						<h3>Your order</h3>
-						<ul class="cart-lines" id="cart-lines">
-							<li class="cart-empty" id="cart-empty">Nothing added yet — pick a few dishes above.</li>
-						</ul>
-						<div class="cart-total-row">
-							<span>Total</span>
-							<span id="cart-total">$0.00</span>
-						</div>
+					<p class="body-olive">
+						Questions or a special request about getting your pre-order, delivery included? <a href="mailto:hello@eatsharav.com">Reach out</a> and we'll work it out.
+					</p>
+				</div>
+			</div>
+
+			<form id="preorder-form" class="order-form" novalidate>
+				<div class="cart-block">
+					<div class="eyebrow small">Your order</div>
+					<ul class="cart-lines" id="cart-lines">
+						<li class="cart-empty" id="cart-empty">Nothing added yet — pick from the food above.</li>
+					</ul>
+					<div class="cart-subtotal">
+						<span class="eyebrow olive small">Subtotal</span>
+						<span class="cart-total" id="cart-total">$0</span>
 					</div>
 				</div>
-
-				<form id="preorder-form" class="form-card" novalidate>
-					<div class="form-row">
-						<label for="preorder-name">Full Name</label>
-						<input type="text" id="preorder-name" name="full_name" required />
-					</div>
-					<div class="form-row-split">
-						<div class="form-row">
-							<label for="preorder-phone">Phone</label>
-							<input type="tel" id="preorder-phone" name="phone" placeholder="+1 240 555 0123" required />
-						</div>
-						<div class="form-row">
-							<label for="preorder-email">Email</label>
-							<input type="email" id="preorder-email" name="email" required />
-						</div>
-					</div>
-					<div class="form-row">
-						<label for="preorder-notes">Notes (optional)</label>
-						<textarea id="preorder-notes" name="notes" rows="2" placeholder="Pickup time preference, allergies, etc."></textarea>
-					</div>
-					<button type="submit" class="btn btn-primary form-submit">Submit Pre-Order</button>
-					<p class="form-status" id="preorder-status" role="status"></p>
-				</form>
-			</div>
+				<div class="form-row-2">
+					<input type="text" name="full_name" placeholder="Name" required />
+					<input type="tel" name="phone" placeholder="Phone" required />
+				</div>
+				<input type="email" name="email" placeholder="Email" required />
+				<textarea name="notes" rows="3" placeholder="Anything else — allergies, which pickup, a note"></textarea>
+				<p class="form-status" id="preorder-status" role="status"></p>
+				<button type="submit" class="btn btn-rust btn-block">Send order</button>
+			</form>
 		</section>
 
 		<!-- Story -->
-		<section id="story" class="section story">
-			<div class="wrap story-inner">
-				<img src="/images/photo-ethan.jpg" alt="Ethan, Sharav's founder, in the kitchen" class="story-img" />
-				<div class="story-copy">
-					<p class="eyebrow">Our story</p>
-					<h2>What "sharav" means</h2>
-					<p>
-						In Hebrew, <em>sharav</em> is the hot, dry desert wind that sweeps in from the east — the same wind known as the khamsin in Egypt, the sirocco in the Mediterranean, the ghibli in Libya, and the harmattan across West Africa. It's a wind that shows up in every culture along its path, carrying a little of each place with it.
-					</p>
-					<p>
-						That's the idea behind this food. Mizrahi Jewish cooking — the cuisine of Jewish communities from Iraq, Yemen, Syria, Persia, and across North Africa — has always carried influences across borders, absorbing and reshaping flavors the way sharav moves across a map. Every jar of zhug and every round of pita on this table is Ethan's attempt to bring that same cross-cultural warmth to a farmers market table in Maryland.
-					</p>
-					<p class="mission">Hospitality first, heritage always, and a plate that starts a conversation.</p>
-				</div>
+		<section id="story" class="wrap story-section">
+			<div class="story-media">
+				<img src="/images/photo-ethan.jpg" alt="Ethan in the kitchen" class="story-img" />
+				<div class="story-caption">Ethan, in the kitchen on a batch day.</div>
 			</div>
-		</section>
-
-		<!-- Newsletter (mid-page) -->
-		<section class="section newsletter-mid">
-			<div class="wrap newsletter-inner">
-				<div>
-					<p class="eyebrow">Stay in the loop</p>
-					<h2>Get market dates in your inbox</h2>
-					<p class="section-sub">One short email whenever we confirm a new market date or a new dish.</p>
+			<div class="story-copy">
+				<div class="eyebrow">Our Story</div>
+				<h2 class="h2">A wind that belongs to no one</h2>
+				<p>
+					Sharav is the Hebrew word for the dry desert wind — the heat that sweeps across the region and leaves everything sharper once it has passed. The same wind is known everywhere it blows, by a different name in every language: <em>khamsin</em> in Arabic, <em>sirocco</em> across the Mediterranean, <em>ghibli</em> in Tunisia, <em>harmattan</em> in the Maghreb.
+				</p>
+				<p class="body-olive">It belongs to no single people. It touches everyone. That is the whole idea behind this food.</p>
+				<p class="body-olive">
+					Mizrahi means "Eastern" — the Jews of Iraq and Iran, Yemen and Syria, Morocco and Tunisia, Egypt and Kurdistan. Some of the oldest continuous communities on earth, and the reason this food tastes the way it does: it was never made in isolation. Ingredients, techniques and recipes moved in every direction, shared across faiths and borders, passed hand to hand.
+				</p>
+				<div class="why-box">
+					<div class="eyebrow cream small">Why we cook it</div>
+					<p>
+						In one generation, close to a million Jews left, fled or were forced out of lands their families had lived in for two thousand years. What they carried was recipes held in memory and spice blends learned from grandmothers. Cooking it is how it stays.
+					</p>
 				</div>
-				<form class="newsletter-form" data-newsletter-form novalidate>
-					<input type="email" name="email" placeholder="you@example.com" required aria-label="Email address" />
-					<button type="submit" class="btn btn-dark">Subscribe</button>
-				</form>
-				<p class="form-status" data-newsletter-status role="status"></p>
+				<div class="byline">
+					<div class="byline-rule"></div>
+					<div>Ethan — founder, and the one at the stove</div>
+				</div>
 			</div>
 		</section>
 
 		<!-- Catering -->
-		<section id="catering" class="section catering">
+		<section id="catering" class="catering-section">
 			<div class="wrap catering-inner">
-				<div>
-					<p class="eyebrow">Catering</p>
-					<h2>Bring Sharav to your event</h2>
-					<p>
-						From office lunches to backyard gatherings, we build catering spreads around the same mezze on this menu — scaled up, plated your way. Tell us about your event and we'll follow up with a quote.
+				<div class="catering-copy">
+					<div class="eyebrow cream">Catering</div>
+					<h2 class="h2 cream">Feeding a room full of people</h2>
+					<p class="body-cream">
+						Mezze spreads for holidays, b'nai mitzvah, office lunches and weddings. Platters by the tray, pita by the dozen, tea by the urn. Tell us the date and the headcount and we'll send a quote.
 					</p>
+					<div class="pill-row">
+						<div class="pill">Holiday tables</div>
+						<div class="pill">B'nai mitzvah</div>
+						<div class="pill">Office lunch</div>
+						<div class="pill">Weddings</div>
+					</div>
 				</div>
-				<form id="catering-form" class="form-card" novalidate>
-					<div class="form-row">
-						<label for="catering-name">Full Name</label>
-						<input type="text" id="catering-name" name="full_name" required />
+				<form id="catering-form" class="catering-form" novalidate>
+					<div class="eyebrow small">Request a quote</div>
+					<div class="form-row-2">
+						<input type="text" name="full_name" placeholder="Name" required />
+						<input type="email" name="email" placeholder="Email" required />
 					</div>
-					<div class="form-row">
-						<label for="catering-email">Email</label>
-						<input type="email" id="catering-email" name="email" required />
+					<div class="form-row-2">
+						<input type="date" name="event_date" required />
+						<input type="number" name="guest_count" placeholder="Guests" min="1" required />
 					</div>
-					<div class="form-row-split">
-						<div class="form-row">
-							<label for="catering-date">Event Date</label>
-							<input type="date" id="catering-date" name="event_date" required />
-						</div>
-						<div class="form-row">
-							<label for="catering-guests">Number of Guests</label>
-							<input type="number" id="catering-guests" name="guest_count" min="1" required />
-						</div>
-					</div>
-					<div class="form-row">
-						<label for="catering-occasion">Tell us about your event</label>
-						<textarea id="catering-occasion" name="occasion" rows="3" required></textarea>
-					</div>
-					<button type="submit" class="btn btn-primary form-submit">Request Quote</button>
+					<textarea name="occasion" rows="3" placeholder="What's the occasion?" required></textarea>
 					<p class="form-status" id="catering-status" role="status"></p>
+					<button type="submit" class="btn btn-rust btn-block">Send inquiry</button>
 				</form>
 			</div>
 		</section>
 
-		<!-- FAQ -->
-		<section class="section faq">
-			<div class="wrap">
-				<p class="eyebrow center">Questions</p>
-				<h2 class="center">Good to know</h2>
+		<!-- FAQ + Newsletter -->
+		<section class="wrap faq-section">
+			<div class="faq-col">
+				<div class="eyebrow">Questions</div>
+				<h2 class="h2-sm">The things people ask</h2>
 				<div class="faq-list">
-					<details class="faq-item">
-						<summary>How does preordering work?</summary>
-						<p>Add dishes to your order above, submit your contact info, and we'll confirm your pickup window by text or email. Payment happens in person at the market when you pick up.</p>
-					</details>
-					<details class="faq-item">
-						<summary>Is everything nut-free / vegetarian?</summary>
-						<p>Most of the menu is vegetarian, but muhammara contains walnuts. Add any allergies or dietary notes to your order and we'll flag anything to watch for.</p>
-					</details>
-					<details class="faq-item">
-						<summary>Do you take custom orders for events?</summary>
-						<p>Yes — see the catering section above. Tell us the date, headcount, and occasion, and we'll send a quote.</p>
-					</details>
-					<details class="faq-item">
-						<summary>Where can I find your schedule?</summary>
-						<p>Check the Find Us section on this page, or follow <a href="https://www.instagram.com/eatsharav" target="_blank" rel="noopener">@eatsharav</a> — we post updates there first.</p>
-					</details>
+					<div class="faq-row">
+						<div class="faq-q">How hot is the zhug, really?</div>
+						<div class="faq-a">Hot. It's a condiment, not a dip — a spoonful stirred into hummus or spread thin on bread. Everything else in the lineup is mild.</div>
+					</div>
+					<div class="faq-row">
+						<div class="faq-q">How long does it keep?</div>
+						<div class="faq-a">Every container is marked with a best-by date. Nothing is preserved or pasteurized, so keep it cold and use your best judgment.</div>
+					</div>
+					<div class="faq-row">
+						<div class="faq-q">Allergens?</div>
+						<div class="faq-a">Sesame in everything with tahini. Walnuts in the muhammara, pistachios in the carrot dip. All made in one kitchen, so we can't promise no cross-contact.</div>
+					</div>
+					<div class="faq-row faq-row-last">
+						<div class="faq-q">Is it vegan? Kosher?</div>
+						<div class="faq-a">The dips are all plant-based. We're not certified kosher — ask us and we'll tell you exactly how we cook.</div>
+					</div>
+				</div>
+			</div>
+			<div class="side-col">
+				<form class="newsletter-form" id="newsletter-form" novalidate>
+					<div class="eyebrow gold small">Where we're headed next</div>
+					<p class="body-cream-90">One email a week: which market we'll be at, what's in the batch, and what's out for sampling.</p>
+					<input type="text" name="name" placeholder="Name (optional)" />
+					<div class="newsletter-row">
+						<input type="email" name="email" required placeholder="your@email.com" />
+						<button type="submit" class="btn btn-gold">Join our list</button>
+					</div>
+					<p class="form-status" id="newsletter-status" role="status"></p>
+				</form>
+				<div class="where-to-buy">
+					<div class="eyebrow">Where to buy</div>
+					<p class="body-olive">
+						Right now it's markets, pre-order pickup and local delivery — no shelves yet. If you run a shop or a café and want to carry it, <a href="mailto:hello@eatsharav.com">write to us</a>.
+					</p>
+					<img src="/images/brand/ill-4-terracotta.svg" alt="" class="illustration" aria-hidden="true" />
 				</div>
 			</div>
 		</section>
 	</main>
 
 	<footer class="site-footer">
-		<img src="/images/brand/ill-4-terracotta.svg" alt="" class="footer-illustration" aria-hidden="true" />
-		<div class="wrap">
-			<div class="footer-top">
-				<div>
-					<img src="/images/brand/logo-h-cream.svg" alt="Sharav" class="footer-brand-wordmark" />
-					<p>Mizrahi Jewish pita &amp; mezze at farmers markets around DC &amp; Maryland.</p>
-					<form class="newsletter-form footer-newsletter-form" data-newsletter-form novalidate>
-						<input type="email" name="email" placeholder="you@example.com" required aria-label="Email address" />
-						<button type="submit" class="btn btn-ghost">Subscribe</button>
-					</form>
-					<p class="form-status" data-newsletter-status role="status"></p>
+		<div class="wrap footer-inner">
+			<div class="footer-brand">
+				<img src="/images/brand/logo-h-cream.svg" alt="Sharav - Mizrahi Cuisine" class="footer-wordmark" />
+				<div class="footer-contact">
+					Greater Washington, DC Area<br />
+					<a href="mailto:hello@eatsharav.com">hello@eatsharav.com</a> · <a href="tel:+12403088109">(240) 308-8109</a>
 				</div>
-				<nav class="footer-nav">
-					<a href="#food">Food</a>
-					<a href="#find">Find Us</a>
-					<a href="#story">Our Story</a>
+			</div>
+			<form class="footer-newsletter-form" id="footer-newsletter-form" novalidate>
+				<div class="eyebrow gold small">Our list</div>
+				<div class="footer-newsletter-copy">One email a week — where we'll be and what's in the batch.</div>
+				<input type="text" name="name" placeholder="Name (optional)" />
+				<input type="email" name="email" required placeholder="your@email.com" />
+				<button type="submit" class="btn btn-gold-block">Join our list</button>
+				<p class="form-status" id="footer-newsletter-status" role="status"></p>
+			</form>
+			<div class="footer-links">
+				<div class="footer-link-col">
+					<div class="eyebrow gold small">Visit</div>
+					<a href="#food">The food</a>
+					<a href="#find">Markets</a>
+					<a href="#order">Order</a>
+				</div>
+				<div class="footer-link-col">
+					<div class="eyebrow gold small">More</div>
+					<a href="#story">Our story</a>
 					<a href="#catering">Catering</a>
-					<a href="https://www.instagram.com/eatsharav" target="_blank" rel="noopener">Instagram</a>
-				</nav>
+					<a href="https://instagram.com/eatsharav" target="_blank" rel="noopener">@eatsharav</a>
+				</div>
 			</div>
-			<div class="footer-bottom">
-				<p>&copy; {new Date().getFullYear()} Sharav. All rights reserved.</p>
-				<p>(240) 308-8109 · hello@eatsharav.com</p>
-			</div>
+		</div>
+		<div class="footer-bottom-bar">
+			<div class="wrap footer-bottom-text">© {new Date().getFullYear()} Sharav · Made by hand in Maryland 🌻</div>
 		</div>
 	</footer>
 </Layout>
 
 <style>
-	.placeholder-banner {
+	.h2 {
+		font-size: 40px;
+	}
+	.h2-sm {
+		font-size: 34px;
+		margin-top: 12px;
+	}
+	.cream {
+		color: var(--cream);
+	}
+	.body-olive {
+		color: var(--olive);
+		font-size: 16px;
+		line-height: 1.6;
+	}
+	.body-cream {
+		color: var(--cream);
+		font-size: 16px;
+		line-height: 1.6;
+	}
+	.body-cream-90 {
+		color: rgba(237, 226, 211, 0.9);
+		font-size: 15.5px;
+		line-height: 1.6;
+	}
+	.eyebrow.gold {
+		color: var(--gold);
+	}
+	.eyebrow.olive {
+		color: var(--olive);
+	}
+	.eyebrow.cream {
+		color: var(--cream);
+	}
+	.eyebrow.small {
+		font-size: 12px;
+	}
+
+	.btn {
+		display: inline-block;
+		border: 0;
+		font-family: var(--font-body);
+		font-weight: 600;
+		cursor: pointer;
+		text-align: center;
+		transition: background 0.15s ease, color 0.15s ease;
+	}
+	.btn-rust {
+		padding: 13px 18px;
+		background: var(--rust);
+		color: var(--cream);
+		font-size: 14px;
+	}
+	.btn-rust:hover {
 		background: var(--espresso);
 		color: var(--cream);
-		text-align: center;
-		font-size: 0.82rem;
-		padding: 8px 16px;
 	}
-	.center {
-		text-align: center;
-		margin-left: auto;
-		margin-right: auto;
+	.btn-block {
+		width: 100%;
+		padding: 17px;
+		font-size: 15px;
 	}
-	.food h2.center,
-	.food p.center {
-		max-width: 640px;
+	.btn-cream {
+		padding: 16px 30px;
+		background: var(--cream);
+		color: var(--rust);
+		font-size: 15px;
+	}
+	.btn-cream:hover {
+		background: var(--gold);
+		color: var(--espresso);
+	}
+	.btn-outline-cream {
+		padding: 16px 30px;
+		border: 1px solid rgba(237, 226, 211, 0.55);
+		color: var(--cream);
+		font-size: 15px;
+		font-weight: 500;
+	}
+	.btn-outline-cream:hover {
+		border-color: var(--cream);
+		background: rgba(237, 226, 211, 0.1);
+	}
+	.btn-cream-small {
+		padding: 11px 16px;
+		background: var(--cream);
+		color: var(--espresso);
+		font-size: 13.5px;
+	}
+	.btn-cream-small:hover {
+		background: var(--gold);
+	}
+	.btn-gold {
+		flex: 0 0 auto;
+		width: auto;
+		padding: 14px 22px;
+		background: var(--gold);
+		color: var(--espresso);
+		font-size: 14.5px;
+		white-space: nowrap;
+	}
+	.btn-gold:hover {
+		background: var(--cream);
+	}
+	.btn-gold-block {
+		padding: 13px;
+		background: var(--gold);
+		color: var(--espresso);
+		font-size: 14px;
+	}
+	.btn-gold-block:hover {
+		background: var(--cream);
 	}
 
 	/* Hero */
 	.hero {
-		position: relative;
-		background: var(--rust);
-		color: var(--cream);
-		padding: 72px 0 0;
-		overflow: hidden;
 		display: grid;
-		grid-template-columns: 1.1fr 0.9fr;
-		align-items: end;
-		gap: 24px;
+		grid-template-columns: 1fr 1fr;
+		align-items: stretch;
+		min-height: 620px;
 	}
-	.hero-inner {
-		padding-bottom: 72px;
+	.hero-copy {
+		background: var(--rust);
+		padding: 92px 72px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 26px;
 	}
-	.hero .eyebrow {
-		color: var(--white);
+	.hero-copy h1 {
+		font-size: clamp(34px, 3.9vw, 54px);
+		color: var(--cream);
+		line-height: 1.08;
 	}
-	.hero h1 {
-		color: var(--white);
+	#place-rotator {
+		display: block;
+		width: fit-content;
+		border-bottom: 3px solid var(--gold);
+		padding-bottom: 0.04em;
+		animation: sharavPlaceIn 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
 	}
 	.hero-sub {
-		font-size: 1.05rem;
-		color: #eedfc9;
-		max-width: 520px;
+		max-width: 30em;
+		font-size: 17px;
+		line-height: 1.6;
+		color: var(--cream);
 	}
 	.hero-actions {
 		display: flex;
-		gap: 16px;
+		align-items: center;
+		gap: 14px;
 		flex-wrap: wrap;
-		margin-top: 28px;
+		margin-top: 6px;
 	}
-	.hero-image-wrap {
-		align-self: end;
-		max-height: 480px;
-		overflow: hidden;
-		border-top-left-radius: 24px;
+	.hero-tag {
+		margin-top: 6px;
+		font-size: 13px;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(237, 226, 211, 0.75);
 	}
-	.hero-image {
+	.hero-img {
+		background: var(--espresso);
+	}
+	.hero-img img {
 		width: 100%;
-		height: 480px;
+		height: 100%;
+		min-height: 620px;
 		object-fit: cover;
 	}
-	@media (max-width: 900px) {
+	@media (max-width: 1000px) {
 		.hero {
 			grid-template-columns: 1fr;
+			gap: 0;
 		}
-		.hero-image-wrap {
-			border-radius: 0;
+		.hero-copy {
+			padding: 68px 24px;
 		}
-		.hero-image {
-			height: 280px;
+		.hero-img img {
+			min-height: 400px;
+		}
+	}
+	@media (max-width: 660px) {
+		.hero-copy {
+			padding: 56px 20px;
+		}
+		.hero-img img {
+			min-height: 300px;
 		}
 	}
 
-	/* Food grid */
-	.food {
-		background: var(--white);
+	/* Food */
+	.food-section {
+		padding: 96px 32px 40px;
 	}
-	.food-grid {
-		margin-top: 48px;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 28px;
+	.food-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 40px;
+		flex-wrap: wrap;
 	}
-	.dish-card {
-		text-align: left;
-		background: var(--cream);
-		border-radius: 16px;
-		overflow: hidden;
+	.food-head-copy {
 		display: flex;
 		flex-direction: column;
+		gap: 14px;
+		max-width: 34em;
+	}
+	.preorder-link {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--rust);
+		border-bottom: 1px solid rgba(164, 83, 48, 0.4);
+		white-space: nowrap;
+	}
+	.preorder-link:hover {
+		color: var(--espresso);
+	}
+	.food-grid {
+		margin-top: 44px;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 22px;
+	}
+	.dish-card {
+		display: flex;
+		flex-direction: column;
+		background: var(--white);
+		overflow: hidden;
 	}
 	.dish-img {
 		width: 100%;
-		height: 180px;
+		height: 230px;
 		object-fit: cover;
 	}
-	.dish-card-body {
-		padding: 18px 20px 20px;
+	.dish-img-placeholder {
+		margin: 12px 12px 0;
+		width: calc(100% - 24px);
+		height: 230px;
+		background: rgba(65, 46, 21, 0.07);
+		border: 1px dashed rgba(65, 46, 21, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 20px;
+	}
+	.placeholder-label {
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--rust);
+	}
+	.dish-body {
+		padding: 26px 26px 28px;
 		display: flex;
 		flex-direction: column;
+		gap: 12px;
 		flex: 1;
 	}
-	.dish-card-head {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+	.dish-body h3 {
+		font-size: 22px;
 	}
-	.dish-card-head h3 {
-		margin-bottom: 0;
-	}
-	.badge {
-		background: var(--gold);
-		color: var(--espresso);
-		font-size: 0.68rem;
-		font-weight: 700;
+	.dish-eyebrow {
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		padding: 3px 9px;
-		border-radius: 999px;
+		color: var(--rust);
+	}
+	.dish-eyebrow.mauve {
+		color: var(--mauve);
 	}
 	.dish-desc {
-		color: #6b5738;
-		font-size: 0.92rem;
-		margin: 8px 0 16px;
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--olive);
 		flex: 1;
 	}
-	.dish-card-foot {
+	.dish-price {
+		padding-top: 4px;
+		font-size: 16px;
+		font-weight: 600;
+		color: var(--rust);
+	}
+	.dish-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+	.dish-dark {
+		flex: 1;
+		padding: 26px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.dish-dark-espresso {
+		background: var(--espresso);
+	}
+	.dish-dark-olive {
+		background: var(--olive);
+	}
+	.dish-dark-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.dish-dark-head h3 {
+		font-size: 20px;
+		color: var(--cream);
+	}
+	.dish-dark-price {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--gold);
+		white-space: nowrap;
+	}
+	.dish-dark-olive .dish-dark-price {
+		color: var(--cream);
+	}
+	.dish-dark-desc {
+		font-size: 13.5px;
+		line-height: 1.55;
+		color: rgba(237, 226, 211, 0.85);
+		flex: 1;
+	}
+	@media (max-width: 1000px) {
+		.food-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 660px) {
+		.food-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Find */
+	.find-section {
+		margin-top: 80px;
+		background: var(--espresso);
+		color: var(--cream);
+	}
+	.find-inner {
+		padding: 84px 32px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 56px;
+		align-items: start;
+	}
+	.find-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.find-contact {
+		margin-top: 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.contact-link {
+		font-size: 15px;
+		color: var(--cream);
+		border-bottom: 1px solid rgba(210, 150, 59, 0.6);
+	}
+	.contact-link:hover {
+		color: var(--gold);
+	}
+	.schedule {
+		display: flex;
+		flex-direction: column;
+	}
+	.schedule-head {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-	}
-	.dish-price {
-		font-weight: 700;
-		color: var(--rust);
-		font-size: 1.05rem;
-	}
-	.btn-small {
-		padding: 8px 16px;
-		font-size: 0.85rem;
-	}
-
-	/* Find us */
-	.find-us-inner {
-		display: grid;
-		grid-template-columns: 1.1fr 0.9fr;
-		gap: 48px;
-		align-items: start;
-	}
-	.contact-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
 		gap: 16px;
-		margin-top: 24px;
-		max-width: 420px;
+		padding-bottom: 14px;
+		border-bottom: 1px solid rgba(237, 226, 211, 0.3);
 	}
-	.contact-card {
-		background: var(--white);
-		border-radius: 14px;
-		padding: 18px;
-		text-align: center;
-		box-shadow: 0 8px 20px rgba(65, 46, 21, 0.06);
-	}
-	.contact-label {
-		display: block;
-		font-size: 0.72rem;
+	.confirm-pill {
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		letter-spacing: 0.1em;
 		color: var(--rust);
-		font-weight: 700;
-		margin-bottom: 6px;
+		background: var(--cream);
+		padding: 4px 9px;
 	}
-	.contact-value {
-		display: block;
-		font-weight: 600;
-	}
-	.schedule-card {
-		background: var(--white);
-		border-radius: 16px;
-		padding: 32px;
-		box-shadow: 0 12px 30px rgba(65, 46, 21, 0.08);
-	}
-	.schedule-list {
-		list-style: none;
-		margin: 16px 0;
-		padding: 0;
-	}
-	.schedule-list li {
+	.schedule-row {
 		display: flex;
+		align-items: baseline;
 		justify-content: space-between;
-		gap: 12px;
-		padding: 12px 0;
-		border-bottom: 1px solid var(--cream-dark);
+		gap: 20px;
+		padding: 20px 0;
+		border-bottom: 1px solid rgba(237, 226, 211, 0.16);
+	}
+	.schedule-name {
+		font-size: 19px;
 		font-weight: 600;
 	}
-	.schedule-list li:last-child {
-		border-bottom: none;
+	.schedule-sub {
+		font-size: 14px;
+		color: rgba(237, 226, 211, 0.7);
+		margin-top: 4px;
 	}
-	.schedule-day {
-		color: var(--rust);
-	}
-	.schedule-detail {
+	.schedule-time {
+		font-size: 14px;
 		font-weight: 500;
-		font-size: 0.9rem;
-		text-align: right;
-	}
-	.schedule-tba {
-		color: #9c8258;
-		font-weight: 500;
-	}
-	.schedule-note {
-		font-size: 0.85rem;
-		color: #9c8258;
-		margin: 0;
+		color: var(--gold);
+		white-space: nowrap;
 	}
 
 	/* Order */
 	.order-section {
-		background: var(--cream-dark);
-	}
-	.order-inner {
+		padding: 92px 32px;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 48px;
+		grid-template-columns: 1.05fr 1fr;
+		gap: 56px;
 		align-items: start;
 	}
-	.cart-panel {
+	.order-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.how-it-works {
+		margin-top: 12px;
+		padding: 22px 24px;
+		background: rgba(94, 94, 48, 0.1);
+		border-left: 2px solid var(--olive);
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.how-it-works p {
+		font-size: 14.5px;
+		line-height: 1.6;
+		color: var(--espresso);
+	}
+	.good-to-know {
+		margin-top: 10px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.good-to-know p {
+		font-size: 14.5px;
+		line-height: 1.65;
+	}
+	.order-form {
 		background: var(--white);
-		border-radius: 16px;
-		padding: 24px;
-		margin-top: 24px;
-		box-shadow: 0 8px 20px rgba(65, 46, 21, 0.06);
+		padding: 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+	.cart-block {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 	.cart-lines {
 		list-style: none;
-		margin: 12px 0;
+		margin: 0;
 		padding: 0;
 	}
-	.cart-lines li {
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
-		padding: 8px 0;
-		font-size: 0.92rem;
-	}
 	.cart-empty {
-		color: #9c8258;
+		padding: 16px 0;
+		font-size: 14.5px;
+		line-height: 1.6;
+		color: var(--olive);
+		border-bottom: 1px solid rgba(65, 46, 21, 0.12);
+	}
+	.cart-line {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 14px;
+		padding: 11px 0;
+		border-bottom: 1px solid rgba(65, 46, 21, 0.12);
+	}
+	.cart-line-left {
+		display: flex;
+		align-items: baseline;
+		gap: 9px;
 	}
 	.cart-line-remove {
+		border: 0;
 		background: none;
-		border: none;
+		padding: 0;
+		width: auto;
+		font-size: 16px;
+		line-height: 1;
 		color: var(--rust);
 		cursor: pointer;
-		font-size: 0.82rem;
-		text-decoration: underline;
 	}
-	.cart-total-row {
+	.cart-line-remove:hover {
+		color: var(--espresso);
+	}
+	.cart-line-name {
+		font-size: 15px;
+		font-weight: 500;
+	}
+	.cart-line-amount {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--espresso);
+	}
+	.cart-subtotal {
 		display: flex;
+		align-items: baseline;
 		justify-content: space-between;
-		font-weight: 700;
-		border-top: 1px solid var(--cream-dark);
-		padding-top: 12px;
-		margin-top: 4px;
+		gap: 14px;
+		padding-top: 6px;
 	}
-
-	.form-card {
-		background: var(--white);
-		border-radius: 16px;
-		padding: 28px;
-		box-shadow: 0 12px 30px rgba(65, 46, 21, 0.08);
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
+	.cart-total {
+		font-size: 22px;
+		font-weight: 600;
+		color: var(--espresso);
 	}
-	.form-row {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-	.form-row-split {
+	.form-row-2 {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 16px;
+		gap: 12px;
 	}
-	.form-row label {
-		font-size: 0.82rem;
-		font-weight: 600;
-		color: var(--espresso);
-	}
-	.form-row input,
-	.form-row textarea {
-		font-family: var(--font-body);
-		font-size: 0.95rem;
-		padding: 10px 12px;
-		border: 1.5px solid var(--cream-dark);
-		border-radius: 8px;
+	.order-form input,
+	.order-form textarea,
+	.catering-form input,
+	.catering-form textarea {
+		padding: 13px 14px;
+		border: 1px solid rgba(65, 46, 21, 0.25);
 		background: var(--cream);
+		font-size: 14.5px;
 		color: var(--espresso);
 	}
-	.form-row input:focus,
-	.form-row textarea:focus {
-		outline: 2px solid var(--gold);
-		outline-offset: 1px;
+	.catering-form input,
+	.catering-form textarea {
+		background: var(--white);
 	}
-	.form-submit {
-		width: 100%;
+	.order-form textarea,
+	.catering-form textarea {
+		resize: vertical;
 	}
-	.form-status {
-		min-height: 1.2em;
-		font-size: 0.88rem;
-		font-weight: 600;
-		margin: 0;
-	}
-	.form-status.success {
-		color: var(--olive);
-	}
-	.form-status.error {
-		color: var(--rust);
-	}
-
-	@media (max-width: 860px) {
-		.order-inner,
-		.find-us-inner {
+	@media (max-width: 1000px) {
+		.order-section {
 			grid-template-columns: 1fr;
-		}
-		.food-grid {
-			grid-template-columns: repeat(2, 1fr);
+			gap: 40px;
 		}
 	}
-	@media (max-width: 640px) {
-		.food-grid {
-			grid-template-columns: 1fr;
-		}
-		.form-row-split,
-		.contact-grid {
+	@media (max-width: 660px) {
+		.form-row-2 {
 			grid-template-columns: 1fr;
 		}
 	}
 
 	/* Story */
-	.story-inner {
+	.story-section {
+		padding: 0 32px 92px;
 		display: grid;
-		grid-template-columns: 0.85fr 1.15fr;
+		grid-template-columns: 1fr 1.15fr;
 		gap: 56px;
-		align-items: center;
+		align-items: start;
+	}
+	.story-media {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 	.story-img {
-		border-radius: 16px;
 		width: 100%;
-		height: 420px;
+		height: 470px;
 		object-fit: cover;
 	}
-	.story-copy p:not(.eyebrow) {
-		color: #5a4526;
+	.story-caption {
+		font-size: 13px;
+		line-height: 1.5;
+		color: var(--olive);
 	}
-	.mission {
-		font-style: italic;
+	.story-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.story-copy p {
+		font-size: 16.5px;
+		line-height: 1.65;
+		color: var(--espresso);
+	}
+	.why-box {
+		margin-top: 8px;
+		padding: 26px 28px;
+		background: var(--mauve);
+		color: var(--cream);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.why-box p {
+		font-size: 15.5px;
+		line-height: 1.6;
+		color: rgba(237, 226, 211, 0.92);
+	}
+	.byline {
+		margin-top: 4px;
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		font-size: 14.5px;
 		font-weight: 500;
-		font-size: 1.05rem;
-		color: var(--espresso) !important;
-		border-left: 3px solid var(--gold);
-		padding-left: 18px;
-		margin-top: 24px;
 	}
-	@media (max-width: 860px) {
-		.story-inner {
+	.byline-rule {
+		width: 38px;
+		height: 1.5px;
+		background: var(--gold);
+	}
+	@media (max-width: 1000px) {
+		.story-section {
 			grid-template-columns: 1fr;
+			gap: 40px;
 		}
+		.story-img {
+			height: 400px;
+		}
+	}
+	@media (max-width: 660px) {
 		.story-img {
 			height: 300px;
 		}
 	}
 
-	/* Newsletter mid */
-	.newsletter-mid {
-		background: var(--white);
-	}
-	.newsletter-inner {
-		max-width: 640px;
-		margin: 0 auto;
-		text-align: center;
-	}
-	.newsletter-form {
-		display: flex;
-		gap: 12px;
-		margin-top: 20px;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-	.newsletter-form input {
-		font-family: var(--font-body);
-		padding: 12px 16px;
-		border-radius: 999px;
-		border: 1.5px solid var(--cream-dark);
-		min-width: 260px;
-		flex: 1;
-		max-width: 320px;
-	}
-	.footer-newsletter-form {
-		justify-content: flex-start;
-		margin-top: 16px;
-	}
-	.footer-newsletter-form input {
-		background: rgba(237, 226, 211, 0.08);
-		border-color: rgba(203, 177, 135, 0.4);
-		color: var(--cream);
-	}
-	.footer-newsletter-form input::placeholder {
-		color: #a68a63;
-	}
-	.site-footer .form-status {
-		color: #d8c9a5;
-	}
-
 	/* Catering */
-	.catering {
+	.catering-section {
 		background: var(--rust);
 		color: var(--cream);
 	}
-	.catering .eyebrow {
-		color: var(--white);
-	}
-	.catering h2 {
-		color: var(--white);
-	}
 	.catering-inner {
+		padding: 84px 32px;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 48px;
-		align-items: start;
+		gap: 56px;
+		align-items: center;
 	}
-	@media (max-width: 860px) {
+	.catering-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.pill-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 9px;
+		margin-top: 4px;
+	}
+	.pill {
+		padding: 8px 14px;
+		border: 1px solid rgba(237, 226, 211, 0.45);
+		font-size: 13px;
+		font-weight: 500;
+	}
+	.catering-form {
+		background: var(--cream);
+		color: var(--espresso);
+		padding: 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	@media (max-width: 1000px) {
 		.catering-inner {
 			grid-template-columns: 1fr;
 		}
 	}
 
-	/* FAQ */
-	.faq-list {
-		max-width: 720px;
-		margin: 40px auto 0;
+	/* FAQ + newsletter */
+	.faq-section {
+		padding: 92px 32px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 64px;
+		align-items: start;
+	}
+	.faq-col {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 22px;
 	}
-	.faq-item {
-		background: var(--white);
-		border-radius: 12px;
-		padding: 16px 20px;
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
 	}
-	.faq-item summary {
-		cursor: pointer;
+	.faq-row {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-bottom: 18px;
+		border-bottom: 1px solid rgba(65, 46, 21, 0.15);
+	}
+	.faq-row-last {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+	.faq-q {
+		font-size: 16px;
 		font-weight: 600;
 	}
-	.faq-item p {
-		margin: 12px 0 0;
-		color: #6b5738;
+	.faq-a {
+		font-size: 14.5px;
+		line-height: 1.6;
+		color: var(--olive);
+	}
+	.side-col {
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+	.newsletter-form {
+		background: var(--espresso);
+		color: var(--cream);
+		padding: 34px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.newsletter-form input {
+		margin-top: 4px;
+		padding: 14px;
+		border: 1px solid rgba(237, 226, 211, 0.35);
+		background: rgba(237, 226, 211, 0.08);
+		font-size: 14.5px;
+		color: var(--cream);
+	}
+	.newsletter-row {
+		display: flex;
+		gap: 10px;
+	}
+	.newsletter-row input {
+		flex: 1 1 auto;
+		margin-top: 0;
+	}
+	.where-to-buy {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.illustration {
+		height: 96px;
+		width: auto;
+		align-self: flex-start;
+		margin-top: 6px;
+		opacity: 0.9;
+	}
+	@media (max-width: 1000px) {
+		.faq-section {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+
+	/* Footer */
+	.site-footer {
+		background: var(--espresso);
+		color: var(--cream);
+	}
+	.footer-inner {
+		padding: 60px 32px 44px;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 48px;
+		flex-wrap: wrap;
+	}
+	.footer-brand {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.footer-wordmark {
+		width: 210px;
+		height: auto;
+	}
+	.footer-contact {
+		font-size: 14.5px;
+		line-height: 1.7;
+		color: rgba(237, 226, 211, 0.85);
+	}
+	.footer-contact a {
+		color: rgba(237, 226, 211, 0.85);
+	}
+	.footer-newsletter-form {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		max-width: 320px;
+	}
+	.footer-newsletter-copy {
+		font-size: 14px;
+		line-height: 1.55;
+		color: rgba(237, 226, 211, 0.85);
+	}
+	.footer-newsletter-form input {
+		padding: 12px 13px;
+		border: 1px solid rgba(237, 226, 211, 0.3);
+		background: rgba(237, 226, 211, 0.08);
+		font-size: 14px;
+		color: var(--cream);
+	}
+	.footer-links {
+		display: flex;
+		gap: 56px;
+		flex-wrap: wrap;
+	}
+	.footer-link-col {
+		display: flex;
+		flex-direction: column;
+		gap: 9px;
+	}
+	.footer-link-col a {
+		font-size: 14px;
+		color: rgba(237, 226, 211, 0.85);
+	}
+	.footer-link-col a:hover {
+		color: var(--cream);
+	}
+	.footer-bottom-bar {
+		border-top: 1px solid rgba(237, 226, 211, 0.16);
+	}
+	.footer-bottom-text {
+		padding: 20px 32px;
+		font-size: 12px;
+		color: rgba(237, 226, 211, 0.55);
+	}
+
+	.form-status {
+		min-height: 1.2em;
+		font-size: 13.5px;
+		font-weight: 600;
+		margin: 0;
+		color: var(--olive);
+	}
+	.newsletter-form .form-status,
+	.footer-newsletter-form .form-status {
+		color: var(--gold);
+	}
+	.form-status.error {
+		color: var(--rust);
 	}
 </style>
 
 <script>
-	// --- Mobile nav toggle ---
-	const navToggle = document.getElementById('nav-toggle');
-	const siteNav = document.getElementById('site-nav');
-	navToggle?.addEventListener('click', () => {
-		const open = siteNav?.classList.toggle('open');
-		navToggle.setAttribute('aria-expanded', String(!!open));
-	});
-
 	// --- Rotating place name in the hero ---
-	const PLACES = ['Olney', 'Silver Spring', 'Rockville', 'Bethesda', 'Takoma Park', 'Kensington', 'Wheaton', 'Washington, DC'];
+	const PLACES = ['Olney', 'Silver Spring', 'North Bethesda', 'Rockville', 'Takoma Park', 'Kensington', 'Bethesda', 'Wheaton'];
 	const placeEl = document.getElementById('place-rotator');
 	if (placeEl) {
 		let i = 0;
 		setInterval(() => {
 			i = (i + 1) % PLACES.length;
 			placeEl.textContent = PLACES[i];
+			placeEl.style.animation = 'none';
+			// restart the entrance animation each time
+			void (placeEl as HTMLElement).offsetWidth;
+			placeEl.style.animation = '';
 		}, 2400);
 	}
 
@@ -839,41 +1276,45 @@ const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) 
 			total += line.price * line.qty;
 			count += line.qty;
 			const li = document.createElement('li');
+			li.className = 'cart-line';
 			li.setAttribute('data-cart-line', line.sku);
-			li.innerHTML = `<span>${line.qty}× ${line.name}</span><span>$${(line.price * line.qty).toFixed(2)} <button type="button" class="cart-line-remove" data-remove="${line.sku}">remove</button></span>`;
+			const label = line.qty > 1 ? `${line.name} × ${line.qty}` : line.name;
+			li.innerHTML = `<span class="cart-line-left"><button type="button" class="cart-line-remove" data-remove="${line.sku}">&times;</button><span class="cart-line-name">${label}</span></span><span class="cart-line-amount">$${(line.price * line.qty).toFixed(0)}</span>`;
 			linesEl.appendChild(li);
 		}
 		if (emptyEl) emptyEl.style.display = cart.length ? 'none' : '';
-		totalEl.textContent = `$${total.toFixed(2)}`;
+		totalEl.textContent = `$${total.toFixed(0)}`;
 		countEl.textContent = String(count);
 
 		linesEl.querySelectorAll('[data-remove]').forEach((btn) => {
 			btn.addEventListener('click', () => {
 				const sku = (btn as HTMLElement).getAttribute('data-remove');
-				saveCart(loadCart().filter((l) => l.sku !== sku));
+				const cart2 = loadCart();
+				const idx = cart2.findIndex((l) => l.sku === sku);
+				if (idx !== -1) {
+					cart2[idx].qty -= 1;
+					if (cart2[idx].qty <= 0) cart2.splice(idx, 1);
+				}
+				saveCart(cart2);
 				renderCart();
 			});
 		});
 	}
 
-	document.querySelectorAll('.add-to-order').forEach((btn) => {
-		btn.addEventListener('click', () => {
-			const card = btn.closest('[data-sku]') as HTMLElement | null;
-			if (!card) return;
-			const sku = card.dataset.sku!;
-			const name = card.dataset.name!;
-			const price = Number(card.dataset.price ?? '0');
-			const cart = loadCart();
-			const existing = cart.find((l) => l.sku === sku);
-			if (existing) existing.qty += 1;
-			else cart.push({ sku, name, price, qty: 1 });
-			saveCart(cart);
-			renderCart();
-			btn.textContent = 'Added ✓';
-			setTimeout(() => {
-				btn.textContent = 'Add to order';
-			}, 900);
-		});
+	document.addEventListener('click', (e) => {
+		const btn = (e.target as HTMLElement)?.closest('.add-to-order') as HTMLElement | null;
+		if (!btn) return;
+		const card = btn.closest('[data-sku]') as HTMLElement | null;
+		if (!card) return;
+		const sku = card.dataset.sku!;
+		const name = card.dataset.name!;
+		const price = Number(card.dataset.price ?? '0');
+		const cart = loadCart();
+		const existing = cart.find((l) => l.sku === sku);
+		if (existing) existing.qty += 1;
+		else cart.push({ sku, name, price, qty: 1 });
+		saveCart(cart);
+		renderCart();
 	});
 
 	renderCart();
@@ -881,9 +1322,23 @@ const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) 
 	function cartSummaryText(): string {
 		const cart = loadCart();
 		if (!cart.length) return '';
-		const lines = cart.map((l) => `${l.qty}x ${l.name} ($${(l.price * l.qty).toFixed(2)})`);
+		const lines = cart.map((l) => `${l.qty}x ${l.name} ($${(l.price * l.qty).toFixed(0)})`);
 		const total = cart.reduce((sum, l) => sum + l.price * l.qty, 0);
-		return `${lines.join(', ')} — Total: $${total.toFixed(2)}`;
+		return `${lines.join(', ')} — Total: $${total.toFixed(0)}`;
+	}
+
+	function normalizePhone(raw: string): string {
+		return raw.replace(/[\s()\-.]/g, '');
+	}
+
+	async function postJSON(url: string, body: unknown) {
+		const res = await fetch(url, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		});
+		if (!res.ok) throw new Error('request failed');
+		return res.json();
 	}
 
 	// --- Pre-order form ---
@@ -900,30 +1355,24 @@ const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) 
 			return;
 		}
 		const fd = new FormData(preorderForm);
-		const body = {
-			full_name: fd.get('full_name'),
-			phone: fd.get('phone'),
-			email: fd.get('email'),
-			notes: fd.get('notes'),
-			order_summary: summary,
-		};
 		if (preorderStatus) {
 			preorderStatus.textContent = 'Sending…';
 			preorderStatus.className = 'form-status';
 		}
 		try {
-			const res = await fetch('/api/preorder', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(body),
+			await postJSON('/api/preorder', {
+				full_name: fd.get('full_name'),
+				phone: normalizePhone(String(fd.get('phone') ?? '')),
+				email: fd.get('email'),
+				notes: fd.get('notes'),
+				order_summary: summary,
 			});
-			if (!res.ok) throw new Error('failed');
 			saveCart([]);
 			renderCart();
 			preorderForm.reset();
 			if (preorderStatus) {
-				preorderStatus.textContent = "Thanks! We've got your pre-order and will see you at the market.";
-				preorderStatus.className = 'form-status success';
+				preorderStatus.textContent = "Thank you — we'll confirm by email today.";
+				preorderStatus.className = 'form-status';
 			}
 		} catch {
 			if (preorderStatus) {
@@ -939,28 +1388,22 @@ const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) 
 	cateringForm?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		const fd = new FormData(cateringForm);
-		const body = {
-			full_name: fd.get('full_name'),
-			email: fd.get('email'),
-			event_date: fd.get('event_date'),
-			guest_count: fd.get('guest_count'),
-			occasion: fd.get('occasion'),
-		};
 		if (cateringStatus) {
 			cateringStatus.textContent = 'Sending…';
 			cateringStatus.className = 'form-status';
 		}
 		try {
-			const res = await fetch('/api/catering', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(body),
+			await postJSON('/api/catering', {
+				full_name: fd.get('full_name'),
+				email: fd.get('email'),
+				event_date: fd.get('event_date'),
+				guest_count: fd.get('guest_count'),
+				occasion: fd.get('occasion'),
 			});
-			if (!res.ok) throw new Error('failed');
 			cateringForm.reset();
 			if (cateringStatus) {
-				cateringStatus.textContent = "Thanks! We'll follow up with a catering quote soon.";
-				cateringStatus.className = 'form-status success';
+				cateringStatus.textContent = "Thanks — we'll follow up with a quote soon.";
+				cateringStatus.className = 'form-status';
 			}
 		} catch {
 			if (cateringStatus) {
@@ -970,27 +1413,23 @@ const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) 
 		}
 	});
 
-	// --- Newsletter forms (mid-page + footer, same endpoint) ---
-	document.querySelectorAll('[data-newsletter-form]').forEach((form) => {
-		const statusEl = form.parentElement?.querySelector('[data-newsletter-status]');
-		form.addEventListener('submit', async (e) => {
+	// --- Newsletter forms (mid-page + footer) ---
+	function wireNewsletter(formId: string, statusId: string) {
+		const form = document.getElementById(formId) as HTMLFormElement | null;
+		const statusEl = document.getElementById(statusId);
+		form?.addEventListener('submit', async (e) => {
 			e.preventDefault();
-			const fd = new FormData(form as HTMLFormElement);
+			const fd = new FormData(form);
 			if (statusEl) {
 				statusEl.textContent = 'Sending…';
 				statusEl.className = 'form-status';
 			}
 			try {
-				const res = await fetch('/api/newsletter', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email: fd.get('email') }),
-				});
-				if (!res.ok) throw new Error('failed');
-				(form as HTMLFormElement).reset();
+				await postJSON('/api/newsletter', { email: fd.get('email') });
+				form.reset();
 				if (statusEl) {
-					statusEl.textContent = "You're on the list!";
-					statusEl.className = 'form-status success';
+					statusEl.textContent = "You're on the list — watch for the first one.";
+					statusEl.className = 'form-status';
 				}
 			} catch {
 				if (statusEl) {
@@ -999,5 +1438,7 @@ const heroImage = hummusProduct ? imgSrc(hummusProduct.media?.main, 1000, 1000) 
 				}
 			}
 		});
-	});
+	}
+	wireNewsletter('newsletter-form', 'newsletter-status');
+	wireNewsletter('footer-newsletter-form', 'footer-newsletter-status');
 </script>

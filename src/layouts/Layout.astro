@@ -4,8 +4,8 @@ export interface Props {
 	description?: string;
 }
 const {
-	title = 'Sharav — Mizrahi Jewish Prepared Food',
-	description = 'Sharav brings Mizrahi Jewish pita and mezze to farmers markets around Washington, DC and Maryland.',
+	title = "Sharav · Mizrahi Pita & Mezze · Greater Washington, DC",
+	description = "Small-batch Mizrahi-Jewish mezze and fresh-baked pita — hummus, zhug, muhammara and roasted za'atar carrot, made by hand each week in Maryland. Preorder for market pickup.",
 } = Astro.props;
 ---
 <!doctype html>
@@ -17,12 +17,12 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<meta property="og:title" content="Sharav · Mizrahi Pita & Mezze" />
+		<meta property="og:description" content="Hand-made Mizrahi mezze and fresh pita, sold at Maryland farmers markets and available to preorder for pickup." />
+		<meta property="og:type" content="website" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
-			rel="stylesheet"
-		/>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=block" rel="stylesheet" />
 	</head>
 	<body>
 		<slot />
@@ -32,16 +32,14 @@ const {
 <style is:global>
 	:root {
 		--rust: #a45330;
-		--rust-dark: #8a4327;
 		--espresso: #412e15;
 		--cream: #ede2d3;
-		--cream-dark: #e1d2b9;
 		--gold: #d2963b;
-		--gold-dark: #b37f2f;
 		--olive: #5e5e30;
+		--mauve: #5f3048;
 		--white: #ffffff;
 		--font-body: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-		--max-width: 1120px;
+		--max-width: 1200px;
 	}
 
 	* {
@@ -56,9 +54,11 @@ const {
 		margin: 0;
 		font-family: var(--font-body);
 		font-weight: 400;
+		font-synthesis: none;
 		color: var(--espresso);
 		background: var(--cream);
 		line-height: 1.6;
+		overflow-x: hidden;
 	}
 
 	img,
@@ -68,14 +68,28 @@ const {
 	}
 
 	a {
-		color: inherit;
+		color: var(--rust);
 		text-decoration: none;
+	}
+	a:hover {
+		color: var(--espresso);
+	}
+
+	input,
+	textarea,
+	button,
+	select {
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		font-family: inherit;
 	}
 
 	.wrap {
 		max-width: var(--max-width);
 		margin: 0 auto;
-		padding: 0 24px;
+		padding: 0 32px;
 	}
 
 	h1,
@@ -83,253 +97,88 @@ const {
 	h3 {
 		font-family: var(--font-body);
 		font-weight: 600;
-		line-height: 1.2;
-		margin: 0 0 16px;
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+		margin: 0;
 		color: var(--espresso);
-	}
-
-	h1 {
-		font-size: clamp(2.1rem, 4.6vw, 3.2rem);
-	}
-	h2 {
-		font-size: clamp(1.6rem, 3.2vw, 2.2rem);
-	}
-	h3 {
-		font-size: 1.15rem;
-		margin-bottom: 8px;
 	}
 
 	p {
-		margin: 0 0 16px;
+		margin: 0;
 	}
 
 	.eyebrow {
-		font-family: var(--font-body);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		letter-spacing: 0.14em;
-		font-size: 0.78rem;
-		font-weight: 600;
 		color: var(--rust);
-		margin: 0 0 10px;
 	}
 
-	.section {
-		padding: 80px 0;
+	@keyframes sharavPlaceIn {
+		from {
+			opacity: 0;
+			transform: translateY(0.3em);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
-	.section-sub {
-		max-width: 640px;
-		color: #6b5738;
-	}
-
-	.btn {
-		display: inline-block;
-		padding: 13px 28px;
-		border-radius: 999px;
-		font-weight: 600;
-		font-size: 0.95rem;
-		border: 2px solid transparent;
-		cursor: pointer;
-		transition:
-			transform 0.15s ease,
-			background 0.15s ease,
-			color 0.15s ease;
-	}
-	.btn:hover {
-		transform: translateY(-1px);
-	}
-	.btn-primary {
-		background: var(--gold);
-		color: var(--espresso);
-	}
-	.btn-primary:hover {
-		background: var(--gold-dark);
-	}
-	.btn-ghost {
-		border-color: rgba(237, 226, 211, 0.55);
-		color: var(--cream);
-		background: transparent;
-	}
-	.btn-ghost:hover {
-		border-color: var(--cream);
-		background: rgba(237, 226, 211, 0.08);
-	}
-	.btn-dark {
-		border-color: var(--espresso);
-		color: var(--espresso);
-		background: transparent;
-	}
-	.btn-dark:hover {
-		background: var(--espresso);
-		color: var(--cream);
-	}
-
-	.themed-block {
-		background: linear-gradient(160deg, var(--cream-dark) 0%, var(--cream) 100%);
-		border: 1.5px dashed #c9a97a;
-		border-radius: 14px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 160px;
-		position: relative;
-		overflow: hidden;
-	}
-	.themed-block::after {
-		content: attr(data-label);
-		position: absolute;
-		bottom: 12px;
-		left: 50%;
-		transform: translateX(-50%);
-		padding: 6px 12px;
-		background: rgba(237, 226, 211, 0.9);
-		border-radius: 8px;
-		color: #8a7048;
-		font-size: 0.72rem;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		white-space: nowrap;
+	@media (prefers-reduced-motion: reduce) {
+		#place-rotator {
+			animation: none !important;
+		}
 	}
 
 	/* Header */
 	.site-header {
-		width: 100%;
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: rgba(237, 226, 211, 0.92);
-		backdrop-filter: blur(6px);
-		border-bottom: 1px solid var(--cream-dark);
+		background: rgba(237, 226, 211, 0.96);
+		backdrop-filter: blur(8px);
+		border-bottom: 1px solid rgba(65, 46, 21, 0.14);
 	}
 	.header-inner {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding-top: 14px;
-		padding-bottom: 14px;
+		gap: 32px;
+		padding: 14px 0;
 	}
 	.wordmark-img {
-		height: 28px;
-		width: auto;
+		width: 172px;
+		height: auto;
 	}
 	.site-nav {
 		display: flex;
 		align-items: center;
 		gap: 28px;
-		font-size: 0.92rem;
-		font-weight: 500;
 	}
 	.site-nav a {
-		transition: color 0.15s ease;
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--espresso);
 	}
 	.site-nav a:hover {
 		color: var(--rust);
 	}
 	.nav-cta {
+		padding: 11px 22px;
 		background: var(--rust);
-		color: var(--white) !important;
-		padding: 8px 18px;
-		border-radius: 999px;
+		color: var(--cream) !important;
+		font-size: 14px;
 		font-weight: 600;
+		letter-spacing: 0.02em;
 	}
 	.nav-cta:hover {
-		background: var(--rust-dark);
-	}
-	.nav-toggle {
-		display: none;
-		flex-direction: column;
-		justify-content: center;
-		gap: 5px;
-		width: 36px;
-		height: 36px;
-		background: none;
-		border: none;
-		cursor: pointer;
-	}
-	.nav-toggle span {
-		display: block;
-		height: 2px;
-		background: var(--espresso);
-		border-radius: 2px;
+		background: var(--espresso) !important;
 	}
 
-	/* Footer */
-	.site-footer {
-		background: var(--espresso);
-		color: #cbb187;
-		padding: 56px 0 32px;
-		position: relative;
-		overflow: hidden;
-	}
-	.footer-illustration {
-		position: absolute;
-		right: -60px;
-		bottom: -60px;
-		width: 320px;
-		opacity: 0.12;
-		pointer-events: none;
-	}
-	.footer-top {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: 32px;
-		margin-bottom: 32px;
-		position: relative;
-	}
-	.footer-brand-wordmark {
-		height: 22px;
-		width: auto;
-		margin-bottom: 12px;
-	}
-	.footer-nav {
-		display: flex;
-		gap: 24px;
-		flex-wrap: wrap;
-		font-size: 0.92rem;
-	}
-	.footer-nav a:hover {
-		color: var(--cream);
-	}
-	.footer-bottom {
-		border-top: 1px solid rgba(203, 177, 135, 0.25);
-		padding-top: 20px;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-		justify-content: space-between;
-		font-size: 0.82rem;
-		position: relative;
-	}
-
-	/* Responsive */
-	@media (max-width: 640px) {
-		.nav-toggle {
-			display: flex;
-		}
-		.site-nav {
-			position: absolute;
-			top: 100%;
-			left: 0;
-			right: 0;
-			background: var(--cream);
-			border-bottom: 1px solid var(--cream-dark);
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 0;
-			padding: 8px 24px 20px;
+	@media (max-width: 1000px) {
+		.site-nav a:not(.nav-cta) {
 			display: none;
-		}
-		.site-nav.open {
-			display: flex;
-		}
-		.site-nav a {
-			width: 100%;
-			padding: 12px 0;
-			border-bottom: 1px solid var(--cream-dark);
-		}
-		.nav-cta {
-			margin-top: 12px;
-			text-align: center;
 		}
 	}
 </style>

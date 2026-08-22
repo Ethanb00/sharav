@@ -22,6 +22,9 @@ export const POST: APIRoute = async ({ request }) => {
 		});
 	} catch (err: any) {
 		console.error('preorder submission failed', err);
-		return new Response(JSON.stringify({ error: 'Submission failed.' }), { status: 500 });
+		return new Response(
+			JSON.stringify({ error: 'Submission failed.', detail: err?.message ?? String(err), body: err?.details ?? null }),
+			{ status: 500 },
+		);
 	}
 };
