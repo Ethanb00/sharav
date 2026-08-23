@@ -6,6 +6,7 @@ const babaGanoush: MenuItem = {
 	order: 2,
 	description:
 		'Whole eggplants charred over open flame until they collapse, then folded with tahini and lemon. Deeply smoky, silky, and a little rustic.',
+	image: '',
 };
 
 export default babaGanoush;

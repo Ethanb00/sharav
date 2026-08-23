@@ -13,8 +13,8 @@ try {
 	console.error('Failed to load products', err);
 }
 
-// Presentation content per product — matched by name (cosmetic only; the price/name/image
-// themselves are always read live from Wix Stores above; copy comes from ../data/menu).
+// Presentation content per product — matched by name (cosmetic only; price/name are always
+// read live from Wix Stores above; copy and the dish photo come from ../data/menu/*.ts).
 const MENU_META = MENU_BY_NAME;
 
 products = [...products]
@@ -103,7 +103,7 @@ function priceLine(p: any): string {
 			<div class="food-grid">
 				{mainDishes.map((p) => {
 					const meta = MENU_META[p.name];
-					const img = imgSrc(p.media?.main, 500, 460);
+					const img = imgSrc(meta.image, 500, 460);
 					return (
 						<article class="dish-card" data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'}>
 							{img ? (
@@ -189,7 +189,7 @@ function priceLine(p: any): string {
 				</p>
 				<div class="how-it-works">
 					<div class="eyebrow olive small">How it works</div>
-					<p>Send the order and we reply to confirm what's available and what it comes to. Pay when you pick it up.</p>
+					<p>Add your dishes and continue to secure payment through Square. Your order is confirmed once payment clears — just show up at pickup.</p>
 				</div>
 				<div class="good-to-know">
 					<div class="eyebrow small">Good to know</div>
@@ -220,7 +220,7 @@ function priceLine(p: any): string {
 				<input type="email" name="email" placeholder="Email" required />
 				<textarea name="notes" rows="3" placeholder="Anything else — allergies, which pickup, a note"></textarea>
 				<p class="form-status" id="preorder-status" role="status"></p>
-				<button type="submit" class="btn btn-rust btn-block">Send order</button>
+				<button type="submit" class="btn btn-rust btn-block">Continue to payment</button>
 			</form>
 		</section>
 
@@ -788,6 +788,17 @@ function priceLine(p: any): string {
 		color: var(--gold);
 		white-space: nowrap;
 	}
+	@media (max-width: 1000px) {
+		.find-inner {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+	@media (max-width: 660px) {
+		.find-inner {
+			padding: 56px 20px;
+		}
+	}
 
 	/* Order */
 	.order-section {
@@ -1210,6 +1221,56 @@ function priceLine(p: any): string {
 		color: rgba(237, 226, 211, 0.55);
 	}
 
+	/* Small-screen tightening — large desktop section padding and headline sizes read as
+	   oversized whitespace/wrapping on phones, so scale both down together below 660px. */
+	@media (max-width: 660px) {
+		.h2 {
+			font-size: 30px;
+		}
+		.h2-sm {
+			font-size: 26px;
+		}
+		.food-section {
+			padding: 64px 20px 32px;
+		}
+		.order-section {
+			padding: 56px 20px;
+		}
+		.story-section {
+			padding: 0 20px 56px;
+		}
+		.catering-inner {
+			padding: 56px 20px;
+		}
+		.faq-section {
+			padding: 56px 20px;
+		}
+		.order-form,
+		.catering-form {
+			padding: 24px;
+		}
+		.newsletter-form {
+			padding: 26px;
+		}
+		.newsletter-row {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.newsletter-row input {
+			margin-top: 0;
+		}
+		.newsletter-row .btn-gold {
+			width: 100%;
+		}
+		.footer-inner {
+			padding: 44px 20px 28px;
+			gap: 32px;
+		}
+		.footer-bottom-text {
+			padding: 16px 20px;
+		}
+	}
+
 	.form-status {
 		min-height: 1.2em;
 		font-size: 13.5px;
@@ -1314,14 +1375,6 @@ function priceLine(p: any): string {
 
 	renderCart();
 
-	function cartSummaryText(): string {
-		const cart = loadCart();
-		if (!cart.length) return '';
-		const lines = cart.map((l) => `${l.qty}x ${l.name} ($${(l.price * l.qty).toFixed(0)})`);
-		const total = cart.reduce((sum, l) => sum + l.price * l.qty, 0);
-		return `${lines.join(', ')} — Total: $${total.toFixed(0)}`;
-	}
-
 	function normalizePhone(raw: string): string {
 		return raw.replace(/[\s()\-.]/g, '');
 	}
@@ -1339,10 +1392,21 @@ function priceLine(p: any): string {
 	// --- Pre-order form ---
 	const preorderForm = document.getElementById('preorder-form') as HTMLFormElement | null;
 	const preorderStatus = document.getElementById('preorder-status');
+
+	// Returning from a completed Square checkout redirect (see checkout_options.redirect_url
+	// in /api/preorder.ts) — the cart was already cleared before we left for Square.
+	if (new URLSearchParams(window.location.search).get('order') === 'success') {
+		if (preorderStatus) {
+			preorderStatus.textContent = "Payment received — we'll see you at pickup!";
+			preorderStatus.className = 'form-status';
+		}
+		history.replaceState(null, '', window.location.pathname + window.location.hash);
+	}
+
 	preorderForm?.addEventListener('submit', async (e) => {
 		e.preventDefault();
-		const summary = cartSummaryText();
-		if (!summary) {
+		const cart = loadCart();
+		if (!cart.length) {
 			if (preorderStatus) {
 				preorderStatus.textContent = 'Add at least one dish to your order first.';
 				preorderStatus.className = 'form-status error';
@@ -1351,24 +1415,19 @@ function priceLine(p: any): string {
 		}
 		const fd = new FormData(preorderForm);
 		if (preorderStatus) {
-			preorderStatus.textContent = 'Sending…';
+			preorderStatus.textContent = 'Starting checkout…';
 			preorderStatus.className = 'form-status';
 		}
 		try {
-			await postJSON('/api/preorder', {
+			const { url } = await postJSON('/api/preorder', {
 				full_name: fd.get('full_name'),
 				phone: normalizePhone(String(fd.get('phone') ?? '')),
 				email: fd.get('email'),
 				notes: fd.get('notes'),
-				order_summary: summary,
+				cart,
 			});
 			saveCart([]);
-			renderCart();
-			preorderForm.reset();
-			if (preorderStatus) {
-				preorderStatus.textContent = "Thank you — we'll confirm by email today.";
-				preorderStatus.className = 'form-status';
-			}
+			window.location.href = url;
 		} catch {
 			if (preorderStatus) {
 				preorderStatus.textContent = 'Something went wrong — please try again or call us.';
