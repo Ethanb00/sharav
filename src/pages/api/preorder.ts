@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 		if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
 			console.error('Square is not configured — set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID (see README).');
-			return new Response(JSON.stringify({ error: 'Online payment is not set up yet — please call us to order.' }), { status: 500 });
+			return new Response(JSON.stringify({ error: 'Online payment is not set up yet - please call us to order.' }), { status: 500 });
 		}
 
 		const squareApiBase = SQUARE_ENV === 'production' ? 'https://connect.squareup.com' : 'https://connect.squareupsandbox.com';
@@ -79,7 +79,7 @@ export const POST: APIRoute = async ({ request }) => {
 		const squareData: any = await squareRes.json();
 		if (!squareRes.ok || !squareData?.payment_link?.url) {
 			console.error('Square payment link creation failed', squareData);
-			return new Response(JSON.stringify({ error: 'Could not start checkout — please try again or call us.' }), { status: 502 });
+			return new Response(JSON.stringify({ error: 'Could not start checkout - please try again or call us.' }), { status: 502 });
 		}
 
 		// Best-effort internal record so the existing Wix Forms/Contacts workflow still sees the
