@@ -1538,7 +1538,13 @@ function priceLine(p: any): string {
 	renderCart();
 
 	function normalizePhone(raw: string): string {
-		return raw.replace(/[\s()\-.]/g, '');
+		const digits = raw.replace(/[\s()\-.]/g, '');
+		// Square requires E.164 (a leading "+" and country code) — assume US/Canada for a
+		// bare 10-digit number, since this is a Maryland-based business.
+		if (digits.startsWith('+')) return digits;
+		if (/^\d{10}$/.test(digits)) return `+1${digits}`;
+		if (/^1\d{10}$/.test(digits)) return `+${digits}`;
+		return digits;
 	}
 
 	function isValidEmail(value: string): boolean {
