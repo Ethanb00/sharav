@@ -5,6 +5,20 @@ import { items } from '@wix/data';
 import { imgSrc } from '../lib/wix-media';
 import { MENU_BY_NAME } from '../data/menu';
 
+import { getEntry, render } from 'astro:content';
+const site = (await getEntry('docs', 'site'))!.data;
+const hero = (await getEntry('docs', 'hero'))!.data;
+const food = (await getEntry('docs', 'food'))!.data;
+const find = (await getEntry('docs', 'find'))!.data;
+const order = (await getEntry('docs', 'order'))!.data;
+const catering = (await getEntry('docs', 'catering'))!.data;
+const faq = (await getEntry('docs', 'faq'))!.data;
+const newsletter = (await getEntry('docs', 'newsletter'))!.data;
+const whereToBuy = (await getEntry('docs', 'where-to-buy'))!.data;
+const storyEntry = (await getEntry('docs', 'our-story'))!;
+const story = storyEntry.data;
+const { Content: StoryContent } = await render(storyEntry);
+
 let products: any[] = [];
 try {
 	const res = await productsV3.queryProducts().limit(20).find();
@@ -74,13 +88,13 @@ function priceLine(p: any): string {
 		<!-- Hero -->
 		<section id="top" class="hero">
 			<div class="hero-copy">
-				<h1>The heritage and warmth of Mizrahi cooking, fresh in <span id="place-rotator">Olney</span></h1>
-				<p class="hero-sub">Small-batch Mizrahi dishes, made by hand each week.</p>
+				<h1>{hero.heading_prefix} <span id="place-rotator">{hero.places[0]}</span></h1>
+				<p class="hero-sub">{hero.sub}</p>
 				<div class="hero-actions">
-					<a href="#order" class="btn btn-cream">Preorder for pickup</a>
-					<a href="#find" class="btn btn-outline-cream">Find us at the market</a>
+					<a href="#order" class="btn btn-cream">{hero.cta_primary}</a>
+					<a href="#find" class="btn btn-outline-cream">{hero.cta_secondary}</a>
 				</div>
-				<div class="hero-tag">Greater Washington, DC Area</div>
+				<div class="hero-tag">{site.location_tag}</div>
 			</div>
 			<div class="hero-img">
 				{heroImage && <img src={heroImage} alt="Hummus with olive oil, sumac and pine nuts" />}
@@ -91,13 +105,11 @@ function priceLine(p: any): string {
 		<section id="food" class="wrap food-section">
 			<div class="food-head">
 				<div class="food-head-copy">
-					<div class="eyebrow">The Food</div>
-					<h2 class="h2">Five recipes, made well, made often</h2>
-					<p class="body-olive">
-						Everything is made fresh each week in small batches. Come taste before you buy - there's a different spread out for sampling every market.
-					</p>
+					<div class="eyebrow">{food.eyebrow}</div>
+					<h2 class="h2">{food.heading}</h2>
+					<p class="body-olive">{food.intro}</p>
 				</div>
-				<a href="#order" class="preorder-link">Pre-order for pickup</a>
+				<a href="#order" class="preorder-link">{food.preorder_link}</a>
 			</div>
 
 			<div class="food-grid">
@@ -146,21 +158,19 @@ function priceLine(p: any): string {
 		<section id="find" class="find-section">
 			<div class="wrap find-inner">
 				<div class="find-copy">
-					<div class="eyebrow gold">Find Us</div>
-					<h2 class="h2 cream">Come taste it.</h2>
-					<p class="body-cream">
-						You'll find us at the Olney Farmers Market. Everything is made the day before, so come early for the full lineup, and there's a spread out for sampling every week.
-					</p>
+					<div class="eyebrow gold">{find.eyebrow}</div>
+					<h2 class="h2 cream">{find.heading}</h2>
+					<p class="body-cream">{find.intro}</p>
 					<div class="find-contact">
-						<div class="eyebrow gold small">Questions before you come</div>
-						<div><a href="tel:+12403088109" class="contact-link">(240) 308-8109</a></div>
-						<div><a href="mailto:hello@eatsharav.com" class="contact-link">hello@eatsharav.com</a></div>
+						<div class="eyebrow gold small">{find.contact_label}</div>
+						<div><a href={site.phone_href} class="contact-link">{site.phone}</a></div>
+						<div><a href={`mailto:${site.email}`} class="contact-link">{site.email}</a></div>
 					</div>
 				</div>
 				<div class="schedule">
 					<div class="schedule-head">
-						<div class="eyebrow gold small">This season's schedule</div>
-						<div class="confirm-pill">Confirm dates</div>
+						<div class="eyebrow gold small">{find.schedule_label}</div>
+						<div class="confirm-pill">{find.schedule_confirm_pill}</div>
 					</div>
 					{schedule.length > 0 ? (
 						schedule.map((s) => (
@@ -173,7 +183,7 @@ function priceLine(p: any): string {
 							</div>
 						))
 					) : (
-						<div class="schedule-row"><div class="schedule-name">Schedule coming soon</div></div>
+						<div class="schedule-row"><div class="schedule-name">{find.schedule_empty}</div></div>
 					)}
 				</div>
 			</div>
@@ -182,23 +192,17 @@ function priceLine(p: any): string {
 		<!-- Order -->
 		<section id="order" class="wrap order-section">
 			<div class="order-copy">
-				<div class="eyebrow">Order</div>
-				<h2 class="h2">Pre-order for pickup</h2>
-				<p class="body-olive">
-					Send your order and pick it up at the Olney Farmers Market on Sunday, 9AM to 1PM, or the following Monday at a location in North Bethesda.
-				</p>
+				<div class="eyebrow">{order.eyebrow}</div>
+				<h2 class="h2">{order.heading}</h2>
+				<p class="body-olive">{order.intro}</p>
 				<div class="how-it-works">
-					<div class="eyebrow olive small">How it works</div>
-					<p>Add your dishes and continue to secure payment through Square. Your order is confirmed once payment clears - just show up at pickup.</p>
+					<div class="eyebrow olive small">{order.how_it_works_label}</div>
+					<p>{order.how_it_works_text}</p>
 				</div>
 				<div class="good-to-know">
-					<div class="eyebrow small">Good to know</div>
-					<p class="body-olive">
-						Every container is marked with a best-by date - keep it refrigerated and use your own judgment from there. Made in a kitchen that handles sesame, walnuts and pistachios. Zhug is the only hot one.
-					</p>
-					<p class="body-olive">
-						Questions or a special request about getting your pre-order, delivery included? <a href="mailto:hello@eatsharav.com">Reach out</a> and we'll work it out.
-					</p>
+					<div class="eyebrow small">{order.good_to_know_label}</div>
+					<p class="body-olive">{order.good_to_know_note}</p>
+					<p class="body-olive" set:html={order.good_to_know_contact_html} />
 				</div>
 			</div>
 
@@ -228,27 +232,21 @@ function priceLine(p: any): string {
 		<section id="story" class="wrap story-section">
 			<div class="story-media">
 				<img src="/images/photo-ethan.jpg" alt="Ethan in the kitchen" class="story-img" />
-				<div class="story-caption">Ethan, in the kitchen on a batch day.</div>
+				<div class="story-caption">{story.caption}</div>
 			</div>
 			<div class="story-copy">
-				<div class="eyebrow">Our Story</div>
-				<h2 class="h2">A wind that belongs to no one</h2>
-				<p>
-					Sharav is the Hebrew word for the dry desert wind - the heat that sweeps across the region and leaves everything sharper once it has passed. The same wind is known everywhere it blows, by a different name in every language: <em>khamsin</em> in Arabic, <em>sirocco</em> across the Mediterranean, <em>ghibli</em> in Tunisia, <em>harmattan</em> in the Maghreb.
-				</p>
-				<p class="body-olive">It belongs to no single people. It touches everyone. That is the whole idea behind this food.</p>
-				<p class="body-olive">
-					Mizrahi means "Eastern" - the Jews of Iraq and Iran, Yemen and Syria, Morocco and Tunisia, Egypt and Kurdistan. Some of the oldest continuous communities on earth, and the reason this food tastes the way it does: it was never made in isolation. Ingredients, techniques and recipes moved in every direction, shared across faiths and borders, passed hand to hand.
-				</p>
+				<div class="eyebrow">{story.eyebrow}</div>
+				<h2 class="h2">{story.heading}</h2>
+				<article>
+					<StoryContent />
+				</article>
 				<div class="why-box">
-					<div class="eyebrow cream small">Why we cook it</div>
-					<p>
-						In one generation, close to a million Jews left, fled or were forced out of lands their families had lived in for two thousand years. What they carried was recipes held in memory and spice blends learned from grandmothers. Cooking it is how it stays.
-					</p>
+					<div class="eyebrow cream small">{story.why_label}</div>
+					<p>{story.why_text}</p>
 				</div>
 				<div class="byline">
 					<div class="byline-rule"></div>
-					<div>Ethan - founder, and the one at the stove</div>
+					<div>{story.byline}</div>
 				</div>
 			</div>
 		</section>
@@ -257,20 +255,15 @@ function priceLine(p: any): string {
 		<section id="catering" class="catering-section">
 			<div class="wrap catering-inner">
 				<div class="catering-copy">
-					<div class="eyebrow cream">Catering</div>
-					<h2 class="h2 cream">Feeding a room full of people</h2>
-					<p class="body-cream">
-						Mezze spreads for holidays, b'nai mitzvah, office lunches and weddings. Platters by the tray, pita by the dozen, tea by the urn. Tell us the date and the headcount and we'll send a quote.
-					</p>
+					<div class="eyebrow cream">{catering.eyebrow}</div>
+					<h2 class="h2 cream">{catering.heading}</h2>
+					<p class="body-cream">{catering.intro}</p>
 					<div class="pill-row">
-						<div class="pill">Holiday tables</div>
-						<div class="pill">B'nai mitzvah</div>
-						<div class="pill">Office lunch</div>
-						<div class="pill">Weddings</div>
+						{catering.pills.map((pill: string) => <div class="pill">{pill}</div>)}
 					</div>
 				</div>
 				<form id="catering-form" class="catering-form" novalidate>
-					<div class="eyebrow small">Request a quote</div>
+					<div class="eyebrow small">{catering.quote_label}</div>
 					<div class="form-row-2">
 						<input type="text" name="full_name" placeholder="Name" required />
 						<input type="email" name="email" placeholder="Email" required />
@@ -289,43 +282,31 @@ function priceLine(p: any): string {
 		<!-- FAQ + Newsletter -->
 		<section class="wrap faq-section">
 			<div class="faq-col">
-				<div class="eyebrow">Questions</div>
-				<h2 class="h2-sm">The things people ask</h2>
+				<div class="eyebrow">{faq.eyebrow}</div>
+				<h2 class="h2-sm">{faq.heading}</h2>
 				<div class="faq-list">
-					<div class="faq-row">
-						<div class="faq-q">How hot is the zhug, really?</div>
-						<div class="faq-a">Hot. It's a condiment, not a dip - a spoonful stirred into hummus or spread thin on bread. Everything else in the lineup is mild.</div>
-					</div>
-					<div class="faq-row">
-						<div class="faq-q">How long does it keep?</div>
-						<div class="faq-a">Every container is marked with a best-by date. Nothing is preserved or pasteurized, so keep it cold and use your best judgment.</div>
-					</div>
-					<div class="faq-row">
-						<div class="faq-q">Allergens?</div>
-						<div class="faq-a">Sesame in everything with tahini. Walnuts in the muhammara, pistachios in the carrot dip. All made in one kitchen, so we can't promise no cross-contact.</div>
-					</div>
-					<div class="faq-row faq-row-last">
-						<div class="faq-q">Is it vegan? Kosher?</div>
-						<div class="faq-a">The dips are all plant-based. We're not certified kosher - ask us and we'll tell you exactly how we cook.</div>
-					</div>
+					{faq.items.map((item: { q: string; a: string }, i: number) => (
+						<div class={`faq-row ${i === faq.items.length - 1 ? 'faq-row-last' : ''}`}>
+							<div class="faq-q">{item.q}</div>
+							<div class="faq-a">{item.a}</div>
+						</div>
+					))}
 				</div>
 			</div>
 			<div class="side-col">
 				<form class="newsletter-form" id="newsletter-form" novalidate>
-					<div class="eyebrow gold small">Where we're headed next</div>
-					<p class="body-cream-90">One email a week: which market we'll be at, what's in the batch, and what's out for sampling.</p>
+					<div class="eyebrow gold small">{newsletter.main_label}</div>
+					<p class="body-cream-90">{newsletter.main_text}</p>
 					<input type="text" name="name" placeholder="Name (optional)" />
 					<div class="newsletter-row">
 						<input type="email" name="email" required placeholder="your@email.com" />
-						<button type="submit" class="btn btn-gold">Join our list</button>
+						<button type="submit" class="btn btn-gold">{newsletter.main_cta}</button>
 					</div>
 					<p class="form-status" id="newsletter-status" role="status"></p>
 				</form>
 				<div class="where-to-buy">
-					<div class="eyebrow">Where to buy</div>
-					<p class="body-olive">
-						Right now it's markets, pre-order pickup and local delivery - no shelves yet. If you run a shop or a café and want to carry it, <a href="mailto:hello@eatsharav.com">write to us</a>.
-					</p>
+					<div class="eyebrow">{whereToBuy.eyebrow}</div>
+					<p class="body-olive" set:html={whereToBuy.text_html} />
 					<img src="/images/brand/ill-4-terracotta.svg" alt="" class="illustration" aria-hidden="true" />
 				</div>
 			</div>
@@ -337,16 +318,16 @@ function priceLine(p: any): string {
 			<div class="footer-brand">
 				<img src="/images/brand/logo-h-cream.svg" alt="Sharav - Mizrahi Cuisine" class="footer-wordmark" />
 				<div class="footer-contact">
-					Greater Washington, DC Area<br />
-					<a href="mailto:hello@eatsharav.com">hello@eatsharav.com</a> · <a href="tel:+12403088109">(240) 308-8109</a>
+					{site.location_tag}<br />
+					<a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.phone_href}>{site.phone}</a>
 				</div>
 			</div>
 			<form class="footer-newsletter-form" id="footer-newsletter-form" novalidate>
-				<div class="eyebrow gold small">Our list</div>
-				<div class="footer-newsletter-copy">One email a week - where we'll be and what's in the batch.</div>
+				<div class="eyebrow gold small">{newsletter.footer_label}</div>
+				<div class="footer-newsletter-copy">{newsletter.footer_text}</div>
 				<input type="text" name="name" placeholder="Name (optional)" />
 				<input type="email" name="email" required placeholder="your@email.com" />
-				<button type="submit" class="btn btn-gold-block">Join our list</button>
+				<button type="submit" class="btn btn-gold-block">{newsletter.footer_cta}</button>
 				<p class="form-status" id="footer-newsletter-status" role="status"></p>
 			</form>
 			<div class="footer-links">
@@ -360,7 +341,7 @@ function priceLine(p: any): string {
 					<div class="eyebrow gold small">More</div>
 					<a href="#story">Our story</a>
 					<a href="#catering">Catering</a>
-					<a href="https://instagram.com/eatsharav" target="_blank" rel="noopener">@eatsharav</a>
+					<a href={site.instagram_url} target="_blank" rel="noopener">{site.instagram_handle}</a>
 				</div>
 			</div>
 		</div>
@@ -1290,22 +1271,23 @@ function priceLine(p: any): string {
 	}
 </style>
 
-<script>
+<script define:vars={{ places: hero.places }}>
 	// --- Rotating place name in the hero ---
-	const PLACES = ['Olney', 'Silver Spring', 'North Bethesda', 'Rockville', 'Takoma Park', 'Kensington', 'Bethesda', 'Wheaton'];
 	const placeEl = document.getElementById('place-rotator');
 	if (placeEl) {
 		let i = 0;
 		setInterval(() => {
-			i = (i + 1) % PLACES.length;
-			placeEl.textContent = PLACES[i];
+			i = (i + 1) % places.length;
+			placeEl.textContent = places[i];
 			placeEl.style.animation = 'none';
 			// restart the entrance animation each time
-			void (placeEl as HTMLElement).offsetWidth;
+			void placeEl.offsetWidth;
 			placeEl.style.animation = '';
 		}, 2400);
 	}
+</script>
 
+<script>
 	// --- Cart (client-side only; product data sourced live from Wix Stores at render time) ---
 	type CartLine = { sku: string; name: string; price: number; qty: number };
 	const CART_KEY = 'sharav-cart';
