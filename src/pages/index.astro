@@ -4,6 +4,8 @@ import { productsV3 } from '@wix/stores';
 import { items } from '@wix/data';
 import { imgSrc } from '../lib/wix-media';
 import { MENU_BY_NAME } from '../data/menu';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { getEntry, render } from 'astro:content';
 const site = (await getEntry('docs', 'site'))!.data;
@@ -18,6 +20,14 @@ const whereToBuy = (await getEntry('docs', 'where-to-buy'))!.data;
 const storyEntry = (await getEntry('docs', 'our-story'))!;
 const story = storyEntry.data;
 const { Content: StoryContent } = await render(storyEntry);
+
+const chefEntry = (await getEntry('docs', 'chef'))!;
+const chef = chefEntry.data;
+const { Content: ChefContent } = await render(chefEntry);
+
+// Optional — the layout collapses gracefully to a full-width column until the real file
+// is dropped into public/images/photo-family.jpg.
+const hasFamilyPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/photo-family.jpg'));
 
 let products: any[] = [];
 try {
@@ -50,6 +60,10 @@ try {
 // catalog image (that one keeps coming live from Wix Stores in the dish grid below).
 const HERO_IMAGE_ID = 'wix:image://v1/9647c1_3bfc5b48f34c4941a07d3c5410f598bc~mv2.jpg/photo-hummus.jpg#originWidth=2475&originHeight=3094';
 const heroImage = imgSrc(HERO_IMAGE_ID, 900, 900);
+
+function formatMarketDate(d: string): string {
+	return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
 function priceLine(p: any): string {
 	const amount = Number(p.actualPriceRange?.minValue?.amount ?? 0);
@@ -172,16 +186,45 @@ function priceLine(p: any): string {
 						<div class="eyebrow gold small">{find.schedule_label}</div>
 						<div class="confirm-pill">{find.schedule_confirm_pill}</div>
 					</div>
+
 					{schedule.length > 0 ? (
-						schedule.map((s) => (
-							<div class="schedule-row">
-								<div>
-									<div class="schedule-name">{s.market}</div>
-									<div class="schedule-sub">{s.day}</div>
+						schedule.map((s) => {
+							const isOlney = /olney/i.test(s.market ?? '') && find.market_dates?.length > 0;
+							return (
+								<div class="schedule-row">
+									<div>
+										<div class="schedule-name">{s.market}</div>
+										{isOlney ? (
+											<div class="date-list">
+												{find.schedule_time && <div class="schedule-sub-line">{find.schedule_time}</div>}
+												<div class="date-grid">
+													{find.market_dates.map((d: string) => (
+														<div class="date-chip">{formatMarketDate(d)}</div>
+													))}
+												</div>
+											</div>
+										) : (
+											<div class="schedule-sub">{s.day}</div>
+										)}
+									</div>
+									{!isOlney && <div class="schedule-time">{s.time}</div>}
 								</div>
-								<div class="schedule-time">{s.time}</div>
+							);
+						})
+					) : find.market_dates?.length > 0 ? (
+						<div class="schedule-row">
+							<div>
+								<div class="schedule-name">Olney Farmers Market</div>
+								<div class="date-list">
+									{find.schedule_time && <div class="schedule-sub-line">{find.schedule_time}</div>}
+									<div class="date-grid">
+										{find.market_dates.map((d: string) => (
+											<div class="date-chip">{formatMarketDate(d)}</div>
+										))}
+									</div>
+								</div>
 							</div>
-						))
+						</div>
 					) : (
 						<div class="schedule-row"><div class="schedule-name">{find.schedule_empty}</div></div>
 					)}
@@ -229,25 +272,51 @@ function priceLine(p: any): string {
 		</section>
 
 		<!-- Story -->
-		<section id="story" class="wrap story-section">
-			<div class="story-media">
-				<img src="/images/photo-ethan.jpg" alt="Ethan in the kitchen" class="story-img" />
-				<div class="story-caption">{story.caption}</div>
-			</div>
-			<div class="story-copy">
+		<section id="story" class="wrap story-wrap">
+			<div class="story-editorial">
 				<div class="eyebrow">{story.eyebrow}</div>
 				<h2 class="h2">{story.heading}</h2>
-				<article>
+				<article class="editorial-body">
+					<figure class="float-figure float-left">
+						<img src="/images/photo-ethan.jpg" alt="Ethan in the kitchen" />
+						<figcaption>{story.caption}</figcaption>
+					</figure>
 					<StoryContent />
 				</article>
 				<div class="why-box">
 					<div class="eyebrow cream small">{story.why_label}</div>
 					<p>{story.why_text}</p>
 				</div>
+			</div>
+
+			<div class="story-editorial">
+				<div class="eyebrow">{chef.eyebrow}</div>
+				<h2 class="h2">{chef.heading}</h2>
+				<article class="editorial-body">
+					{hasFamilyPhoto && (
+						<figure class="float-figure float-right">
+							<img src="/images/photo-family.jpg" alt={chef.family_caption} />
+							<figcaption>{chef.family_caption}</figcaption>
+						</figure>
+					)}
+					<ChefContent />
+				</article>
+
+
+
+				<p class="chef-epilogue">{chef.epilogue}</p>
 				<div class="byline">
 					<div class="byline-rule"></div>
 					<div>{story.byline}</div>
 				</div>
+
+				<div class="chef-quote-break">
+					<blockquote>
+						<p>&ldquo;{chef.pull_quote}&rdquo;</p>
+						<cite>&mdash; {chef.quote_attribution}</cite>
+					</blockquote>
+				</div>
+
 			</div>
 		</section>
 
@@ -754,6 +823,10 @@ function priceLine(p: any): string {
 		padding: 20px 0;
 		border-bottom: 1px solid rgba(237, 226, 211, 0.16);
 	}
+	.schedule-row > div:first-child {
+		flex: 1;
+		min-width: 0;
+	}
 	.schedule-name {
 		font-size: 19px;
 		font-weight: 600;
@@ -768,6 +841,29 @@ function priceLine(p: any): string {
 		font-weight: 500;
 		color: var(--gold);
 		white-space: nowrap;
+	}
+	.date-list {
+		margin-top: 10px;
+	}
+	.schedule-sub-line {
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--gold);
+		margin-bottom: 14px;
+	}
+	.date-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+		gap: 10px;
+	}
+	.date-chip {
+		padding: 12px 8px;
+		text-align: center;
+		font-size: 14.5px;
+		font-weight: 600;
+		color: var(--cream);
+		background: rgba(237, 226, 211, 0.06);
+		border: 1px solid rgba(210, 150, 59, 0.35);
 	}
 	@media (max-width: 1000px) {
 		.find-inner {
@@ -925,40 +1021,61 @@ function priceLine(p: any): string {
 	}
 
 	/* Story */
-	.story-section {
-		padding: 0 32px 92px;
-		display: grid;
-		grid-template-columns: 1fr 1.15fr;
-		gap: 56px;
-		align-items: start;
-	}
-	.story-media {
+	.story-wrap {
+		padding: 0 32px 0px;
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 88px;
 	}
-	.story-img {
+	.story-editorial .eyebrow {
+		margin-bottom: 14px;
+	}
+	.story-editorial h2 {
+		margin-bottom: 28px;
+	}
+	.editorial-body {
+		font-size: 16.5px;
+		line-height: 1.7;
+		color: var(--espresso);
+	}
+	.editorial-body::after {
+		content: '';
+		display: table;
+		clear: both;
+	}
+	.editorial-body :global(p) {
+		margin: 0 0 1.15em;
+	}
+	.editorial-body :global(p:last-child) {
+		margin-bottom: 0;
+	}
+	.float-figure {
+		max-width: 300px;
+		margin: 6px 0 22px;
+	}
+	.float-figure.float-left {
+		float: left;
+		margin-right: 30px;
+	}
+	.float-figure.float-right {
+		float: right;
+		margin-left: 30px;
+	}
+	.float-figure img {
 		width: 100%;
-		height: 470px;
+		height: 360px;
 		object-fit: cover;
+		display: block;
 	}
-	.story-caption {
+	.float-figure figcaption {
+		margin-top: 10px;
 		font-size: 13px;
 		line-height: 1.5;
 		color: var(--olive);
 	}
-	.story-copy {
-		display: flex;
-		flex-direction: column;
-		gap: 18px;
-	}
-	.story-copy p {
-		font-size: 16.5px;
-		line-height: 1.65;
-		color: var(--espresso);
-	}
 	.why-box {
-		margin-top: 8px;
+		clear: both;
+		margin-top: 28px;
 		padding: 26px 28px;
 		background: var(--mauve);
 		color: var(--cream);
@@ -972,7 +1089,9 @@ function priceLine(p: any): string {
 		color: rgba(237, 226, 211, 0.92);
 	}
 	.byline {
-		margin-top: 4px;
+		clear: both;
+		margin-top: 24px;
+		margin-bottom: 24px;
 		display: flex;
 		align-items: center;
 		gap: 14px;
@@ -984,18 +1103,85 @@ function priceLine(p: any): string {
 		height: 1.5px;
 		background: var(--gold);
 	}
-	@media (max-width: 1000px) {
-		.story-section {
-			grid-template-columns: 1fr;
-			gap: 40px;
-		}
-		.story-img {
-			height: 400px;
-		}
+	.chef-epilogue {
+		clear: both;
+		margin-top: 30px;
+		font-size: 16px;
+		font-style: italic;
 	}
-	@media (max-width: 660px) {
-		.story-img {
-			height: 300px;
+
+	/* Pull quote — breaks out of the column to full page width for impact */
+	.chef-quote-break {
+		position: relative;
+		width: 100vw;
+		margin-left: 50%;
+		
+		transform: translateX(-50%);
+		padding: 76px 24px;
+		background: var(--mauve);
+		color: var(--cream);
+		text-align: center;
+		overflow: hidden;
+	}
+	.chef-quote-break::before {
+		content: '\201C';
+		position: absolute;
+		top: -70px;
+		left: 50%;
+		transform: translateX(-50%);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: 340px;
+		line-height: 1;
+		color: rgba(210, 150, 59, 0.16);
+		pointer-events: none;
+	}
+	.chef-quote-break blockquote {
+		position: relative;
+		max-width: 720px;
+		margin: 0 auto;
+	}
+	.chef-quote-break p {
+		margin: 0;
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(24px, 3.6vw, 38px);
+		line-height: 1.35;
+		font-style: italic;
+		font-weight: 500;
+		color: var(--cream);
+	}
+	.chef-quote-break cite {
+		display: inline-flex;
+		align-items: center;
+		gap: 12px;
+		margin-top: 26px;
+		font-size: 13px;
+		font-style: normal;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--gold);
+	}
+	.chef-quote-break cite::before {
+		content: '';
+		width: 32px;
+		height: 1.5px;
+		background: var(--gold);
+	}
+	@media (max-width: 700px) {
+		.float-figure {
+			float: none;
+			max-width: 100%;
+			margin: 0 0 20px;
+		}
+		.float-figure img {
+			height: 280px;
+		}
+		.chef-quote-break {
+			padding: 56px 20px;
+		}
+		.chef-quote-break::before {
+			top: -40px;
+			font-size: 200px;
 		}
 	}
 
@@ -1217,7 +1403,7 @@ function priceLine(p: any): string {
 		.order-section {
 			padding: 56px 20px;
 		}
-		.story-section {
+		.story-wrap {
 			padding: 0 20px 56px;
 		}
 		.catering-inner {

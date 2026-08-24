@@ -15,8 +15,10 @@ Headless**.
 ## Structure
 
 Standard Wix-managed Astro layout — see `wix.config.json`, `astro.config.mjs`, and `src/pages/`
-for the actual routes. Product, form, and schedule content live in Wix (Stores / Forms / Data),
-not in this repo — the frontend queries them live at request time.
+for the actual routes. Product catalog data, form submissions, and descriptive schedule rows live
+in Wix (Stores / Forms / Data) and are queried live at request time; most page copy — including
+this season's specific market dates — is source-controlled in `src/data/content/*.md` instead.
+See [Editing content](#editing-content) for where each kind of change belongs.
 
 ## Editing content
 
@@ -33,13 +35,59 @@ The most commonly touched pieces of content live in specific, predictable places
 - **Hero photo** (the large image on the homepage banner): the `HERO_IMAGE_ID` constant near
   the top of `src/pages/index.astro` — a standalone Wix Media asset id, independent of any
   dish's photo.
-- **Market Schedule** (day / market / time): Wix dashboard → Content Manager → Market Schedule.
+- **Market Schedule**: two separate systems that both render on the "Find Us" section — see
+  [Market Schedule](#market-schedule) below.
 - **Form submissions** (pre-orders, catering requests, newsletter signups): Wix dashboard →
   Contacts / Forms. See "Preorder payments" below — the pre-order submission records the order
   for reference, but payment itself is confirmed in Square, not in Wix Forms.
-- **Contact info, FAQ copy, story section, footer links**: hardcoded in
-  `src/pages/index.astro` — search the file for the text you want to change.
-- **Page copy, layout, design**: edit the Astro source in this repo and redeploy.
+- **Most page copy** (headings, intros, eyebrows, FAQ, footer links, the "Our Story" and "Meet
+  the Chef" sections): `src/data/content/*.md` — see [Editing copy](#editing-copy-content-collections)
+  below. Layout, styling, and anything not sourced from those files (menus, cart logic, the hero
+  image id) is still in `src/pages/index.astro`.
+
+### Editing copy (content collections)
+
+Most section copy — eyebrows, headings, intros, button labels — is not hardcoded in
+`index.astro`. It's pulled from `src/data/content/*.md` via Astro content collections
+(`src/content.config.ts`, the `docs` collection). Each file's name is its id
+(`our-story.md` → `getEntry('docs', 'our-story')`); the frontmatter fields are read directly
+(`story.heading`), and the markdown body — if the page renders one — becomes the section's
+prose. There's no schema, so a field can be added to a `.md` file and referenced in
+`index.astro` (or the reverse) freely, but that also means a **typo in a frontmatter key fails
+silently** (renders as blank, not an error) — run `npx astro check` after editing a content file
+to catch broken YAML before it ships (this has already caught real mistakes, e.g. mismatched
+quotes around a pull-quote).
+
+Two files worth knowing about specifically:
+
+- **`src/data/content/our-story.md`** — the Mizrahi history section ("Our Story" / "Why we cook
+  this food"). The markdown body is the main prose; `why_label`/`why_text` are the small callout
+  box at the end. `story.caption` and `story.byline` are also used by the chef section below.
+- **`src/data/content/chef.md`** — the "Meet the Chef" bio. `pull_quote` +
+  `quote_attribution` render as the large full-bleed quote break; `epilogue` is the italic
+  closing line. `family_caption` labels the family photo (see below).
+
+Both sections float a photo at the top of their body copy so the text wraps around it (the
+`<figure class="float-figure float-left|float-right">` markup in `index.astro`, just before
+`<StoryContent />` / `<ChefContent />`). The chef section's family photo is optional: it only
+renders if `public/images/photo-family.jpg` exists on disk (checked at build time via
+`fs.existsSync` in `index.astro`'s frontmatter) — delete the file and the layout collapses back
+to a single column automatically, no code change needed.
+
+### Market Schedule
+
+The "Find Us" schedule section is built from **two independent sources** that both render,
+stacked:
+
+1. **Specific market dates** (e.g. "every other Sunday through the season") — `market_dates` in
+   `src/data/content/find.md`, a plain YAML list of dates (`"September 6, 2026"`, etc.), plus
+   `schedule_time` for the shared line above them (`"Sundays, 9AM–1PM"`). This is what to edit
+   each season when the calendar changes — it's source-controlled, not in Wix.
+2. **Descriptive rows** (venue name, pickup logistics, hours) — the live Wix Data collection
+   (dashboard → Content Manager → Market Schedule). This is for the kind of row that doesn't
+   change every season, like the pre-order pickup location.
+
+If `market_dates` is empty, `find.schedule_empty` is shown instead as a plain fallback message.
 
 ## Preorder payments (Square)
 
