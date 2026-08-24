@@ -30,10 +30,10 @@
     "@astrojs/react": "^4.3.0",
     "@types/node": "^26.2.0",
     "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
+    "@types/react-dom": "^19.2.4",
     "@wix/astro-wix-hosting-adapter": "^2.0.0",
     "@wix/cli": "^1.1.92",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "19.2.8"
   }
 }
