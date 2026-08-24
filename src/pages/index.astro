@@ -4,8 +4,6 @@ import { productsV3 } from '@wix/stores';
 import { items } from '@wix/data';
 import { imgSrc } from '../lib/wix-media';
 import { MENU_BY_NAME } from '../data/menu';
-import fs from 'node:fs';
-import path from 'node:path';
 
 import { getEntry, render } from 'astro:content';
 const site = (await getEntry('docs', 'site'))!.data;
@@ -24,10 +22,6 @@ const { Content: StoryContent } = await render(storyEntry);
 const chefEntry = (await getEntry('docs', 'chef'))!;
 const chef = chefEntry.data;
 const { Content: ChefContent } = await render(chefEntry);
-
-// Optional — the layout collapses gracefully to a full-width column until the real file
-// is dropped into public/images/photo-family.jpg.
-const hasFamilyPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/photo-family.jpg'));
 
 let products: any[] = [];
 try {
@@ -293,12 +287,10 @@ function priceLine(p: any): string {
 				<div class="eyebrow">{chef.eyebrow}</div>
 				<h2 class="h2">{chef.heading}</h2>
 				<article class="editorial-body">
-					{hasFamilyPhoto && (
-						<figure class="float-figure float-right">
-							<img src="/images/photo-family.jpg" alt={chef.family_caption} />
-							<figcaption>{chef.family_caption}</figcaption>
-						</figure>
-					)}
+					<figure class="float-figure float-right">
+						<img src="/images/photo-family.jpg" alt={chef.family_caption} />
+						<figcaption>{chef.family_caption}</figcaption>
+					</figure>
 					<ChefContent />
 				</article>
 
@@ -312,8 +304,8 @@ function priceLine(p: any): string {
 
 				<div class="chef-quote-break">
 					<blockquote>
-						<p>&ldquo;{chef.pull_quote}&rdquo;</p>
-						<cite>&mdash; {chef.quote_attribution}</cite>
+						<p>"{chef.pull_quote}"</p>
+						<cite>{chef.quote_attribution}</cite>
 					</blockquote>
 				</div>
 
@@ -628,7 +620,6 @@ function priceLine(p: any): string {
 		display: flex;
 		flex-direction: column;
 		gap: 14px;
-		max-width: 34em;
 	}
 	.preorder-link {
 		font-size: 14px;
