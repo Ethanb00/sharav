@@ -59,6 +59,24 @@ function formatMarketDate(d: string): string {
 	return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+function formatPickupDate(d: Date): string {
+	return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+
+// Orders are always for the next upcoming market Sunday, with a second pickup option the
+// following Monday in North Bethesda for anyone who can't make the market itself.
+let nextPickup: { market: string; monday: string } | null = null;
+const marketDates: string[] = find.market_dates ?? [];
+if (marketDates.length > 0) {
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const sorted = marketDates.map((d) => new Date(d)).sort((a, b) => a.getTime() - b.getTime());
+	const upcoming = sorted.find((d) => d.getTime() >= today.getTime()) ?? sorted[sorted.length - 1];
+	const monday = new Date(upcoming);
+	monday.setDate(monday.getDate() + 1);
+	nextPickup = { market: formatPickupDate(upcoming), monday: formatPickupDate(monday) };
+}
+
 function priceLine(p: any): string {
 	const amount = Number(p.actualPriceRange?.minValue?.amount ?? 0);
 	const suffix: Record<string, string> = {
@@ -166,18 +184,22 @@ function priceLine(p: any): string {
 		<section id="find" class="find-section">
 			<div class="wrap find-inner">
 				<div class="find-copy">
-					<div class="eyebrow gold">{find.eyebrow}</div>
+					<div class="eyebrow">{find.eyebrow}</div>
 					<h2 class="h2 cream">{find.heading}</h2>
 					<p class="body-cream">{find.intro}</p>
 					<div class="find-contact">
-						<div class="eyebrow gold small">{find.contact_label}</div>
+						<div class="eyebrow small">{find.contact_label}</div>
 						<div><a href={site.phone_href} class="contact-link">{site.phone}</a></div>
 						<div><a href={`mailto:${site.email}`} class="contact-link">{site.email}</a></div>
+					</div>
+					<div class="location-actions" aria-label="Market location information">
+						<button type="button" class="location-trigger" data-location-panel="map">View map</button>
+						<button type="button" class="location-trigger" data-location-panel="parking">Parking options</button>
 					</div>
 				</div>
 				<div class="schedule">
 					<div class="schedule-head">
-						<div class="eyebrow gold small">{find.schedule_label}</div>
+						<div class="eyebrow small">{find.schedule_label}</div>
 						<div class="confirm-pill">{find.schedule_confirm_pill}</div>
 					</div>
 
@@ -229,12 +251,32 @@ function priceLine(p: any): string {
 			</div>
 		</section>
 
+		<dialog id="location-modal" class="location-modal">
+			<div class="location-modal-head">
+				<h2 id="location-modal-title">Market map</h2>
+				<button type="button" class="location-modal-close" aria-label="Close location information">&times;</button>
+			</div>
+			<div id="location-map-panel">
+				<iframe src="https://snazzymaps.com/embed/808822" title="Map of the farmers market" loading="lazy"></iframe>
+			</div>
+			<div id="location-parking-panel" hidden>
+				<p>Parking availability can change on market days. Check the market website for the latest parking guidance before you come.</p>
+				<a href={find.market_link} class="btn btn-rust location-modal-cta" target="_blank" rel="noopener noreferrer">Visit the market website</a>
+			</div>
+		</dialog>
+
 		<!-- Order -->
 		<section id="order" class="wrap order-section">
 			<div class="order-copy">
 				<div class="eyebrow">{order.eyebrow}</div>
 				<h2 class="h2">{order.heading}</h2>
 				<p class="body-olive">{order.intro}</p>
+				{nextPickup && (
+					<div class="pickup-note">
+						<div class="eyebrow small">Ordering for pickup</div>
+						<p>{nextPickup.market} at the Olney Farmers Market, or {nextPickup.monday} in North Bethesda.</p>
+					</div>
+				)}
 				<div class="how-it-works">
 					<div class="eyebrow olive small">{order.how_it_works_label}</div>
 					<p>{order.how_it_works_text}</p>
@@ -257,12 +299,29 @@ function priceLine(p: any): string {
 						<span class="cart-total" id="cart-total">$0</span>
 					</div>
 				</div>
+				{nextPickup && (
+					<div class="pickup-select">
+						<div class="eyebrow small">Pickup</div>
+						<div class="pickup-options">
+							<label class="pickup-option">
+								<input type="radio" name="pickup" value={`Market pickup — ${nextPickup.market}`} required />
+								<span class="pickup-option-name">Market pickup</span>
+								<span class="pickup-option-date">{nextPickup.market}</span>
+							</label>
+							<label class="pickup-option">
+								<input type="radio" name="pickup" value={`North Bethesda pickup — ${nextPickup.monday}`} />
+								<span class="pickup-option-name">North Bethesda pickup</span>
+								<span class="pickup-option-date">{nextPickup.monday}</span>
+							</label>
+						</div>
+					</div>
+				)}
 				<div class="form-row-2">
 					<input type="text" name="full_name" placeholder="Name" required />
 					<input type="tel" name="phone" placeholder="Phone" required />
 				</div>
 				<input type="email" name="email" placeholder="Email" required />
-				<textarea name="notes" rows="3" placeholder="Anything else - allergies, which pickup, a note"></textarea>
+				<textarea name="notes" rows="3" placeholder="Anything else - allergies, a note"></textarea>
 				<p class="form-status" id="preorder-status" role="status"></p>
 				<button type="submit" class="btn btn-rust btn-block">Continue to payment</button>
 			</form>
@@ -769,7 +828,7 @@ function priceLine(p: any): string {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 56px;
-		align-items: start;
+		align-items: stretch;
 	}
 	.find-copy {
 		display: flex;
@@ -777,18 +836,18 @@ function priceLine(p: any): string {
 		gap: 16px;
 	}
 	.find-contact {
-		margin-top: 14px;
+		margin-top: auto;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 	}
 	.contact-link {
 		font-size: 15px;
-		color: var(--cream);
+		color: var(--gold);
 		border-bottom: 1px solid rgba(210, 150, 59, 0.6);
 	}
 	.contact-link:hover {
-		color: var(--gold);
+		color: var(--cream);
 	}
 	.schedule {
 		display: flex;
@@ -796,7 +855,7 @@ function priceLine(p: any): string {
 	}
 	.schedule-head {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
 		gap: 16px;
 		padding-bottom: 14px;
@@ -807,8 +866,9 @@ function priceLine(p: any): string {
 		font-weight: 600;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--rust);
-		background: var(--cream);
+		color: var(--gold);
+		background: transparent;
+		border: 1px solid rgba(237, 226, 211, 0.3);
 		padding: 4px 9px;
 	}
 	.schedule-row {
@@ -817,7 +877,9 @@ function priceLine(p: any): string {
 		justify-content: space-between;
 		gap: 20px;
 		padding: 20px 0;
-		border-bottom: 1px solid rgba(237, 226, 211, 0.16);
+	}
+	.schedule-row + .schedule-row {
+		border-top: 1px solid rgba(237, 226, 211, 0.16);
 	}
 	.schedule-row > div:first-child {
 		flex: 1;
@@ -836,6 +898,81 @@ function priceLine(p: any): string {
 	}
 	.schedule-link:hover {
 		color: var(--cream);
+	}
+	.location-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 8px;
+	}
+	.location-trigger {
+		width: auto;
+		padding: 10px 16px;
+		border: 1px solid var(--rust);
+		background: transparent;
+		color: var(--gold);
+		font-family: inherit;
+		font-size: 13px;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background 0.15s ease, color 0.15s ease;
+	}
+	.location-trigger:hover {
+		background: var(--rust);
+		color: var(--cream);
+	}
+	.location-modal {
+		width: min(760px, calc(100% - 40px));
+		max-height: calc(100vh - 48px);
+		overflow-y: auto;
+		padding: 26px;
+		border: 1px solid rgba(210, 150, 59, 0.45);
+		background: var(--cream);
+		color: var(--espresso);
+	}
+	.location-modal::backdrop {
+		background: rgba(36, 25, 14, 0.72);
+	}
+	.location-modal-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		margin-bottom: 18px;
+		padding-bottom: 14px;
+		border-bottom: 1px solid rgba(65, 46, 21, 0.14);
+	}
+	.location-modal-head h2 {
+		margin: 0;
+		font-size: 25px;
+	}
+	.location-modal-close {
+		width: auto;
+		border: 0;
+		padding: 0;
+		background: transparent;
+		color: var(--espresso);
+		font-size: 28px;
+		line-height: 1;
+		cursor: pointer;
+		transition: color 0.15s ease;
+	}
+	.location-modal-close:hover {
+		color: var(--rust);
+	}
+	.location-modal iframe {
+		display: block;
+		width: 100%;
+		height: min(600px, 65vh);
+		border: 1px solid rgba(65, 46, 21, 0.14);
+	}
+	.location-modal-cta {
+		margin-top: 16px;
+	}
+	.location-modal p {
+		max-width: 52ch;
+		line-height: 1.6;
 	}
 	.schedule-sub {
 		font-size: 14px;
@@ -859,17 +996,23 @@ function priceLine(p: any): string {
 	}
 	.date-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
 		gap: 10px;
+	}
+	@media (min-width: 1001px) {
+		.date-grid {
+			grid-template-columns: repeat(5, 1fr);
+		}
 	}
 	.date-chip {
 		padding: 12px 8px;
 		text-align: center;
 		font-size: 14.5px;
 		font-weight: 600;
+		font-variant-numeric: tabular-nums;
 		color: var(--cream);
 		background: rgba(237, 226, 211, 0.06);
-		border: 1px solid rgba(210, 150, 59, 0.35);
+		border: 1px solid rgba(237, 226, 211, 0.22);
 	}
 	@media (max-width: 1000px) {
 		.find-inner {
@@ -895,6 +1038,20 @@ function priceLine(p: any): string {
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
+	}
+	.pickup-note {
+		margin-top: 4px;
+		padding: 16px 20px;
+		background: rgba(164, 83, 48, 0.08);
+		border-left: 2px solid var(--rust);
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.pickup-note p {
+		font-size: 14.5px;
+		line-height: 1.6;
+		color: var(--espresso);
 	}
 	.how-it-works {
 		margin-top: 12px;
@@ -990,6 +1147,55 @@ function priceLine(p: any): string {
 		font-size: 22px;
 		font-weight: 600;
 		color: var(--espresso);
+	}
+	.pickup-select {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.pickup-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+	.pickup-option {
+		position: relative;
+		flex: 1;
+		min-width: 160px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding: 12px 14px;
+		border: 1px solid rgba(65, 46, 21, 0.25);
+		cursor: pointer;
+		transition: background 0.15s ease, border-color 0.15s ease;
+	}
+	.pickup-option input[type='radio'] {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.pickup-option:focus-within {
+		outline: 2px solid var(--gold);
+		outline-offset: 2px;
+	}
+	.pickup-option:has(input:checked) {
+		border-color: var(--rust);
+		background: rgba(164, 83, 48, 0.08);
+	}
+	.pickup-option-name {
+		font-size: 14.5px;
+		font-weight: 600;
+		color: var(--espresso);
+	}
+	.pickup-option:has(input:checked) .pickup-option-name {
+		color: var(--rust);
+	}
+	.pickup-option-date {
+		font-size: 13px;
+		color: var(--olive);
 	}
 	.form-row-2 {
 		display: grid;
@@ -1480,6 +1686,28 @@ function priceLine(p: any): string {
 </script>
 
 <script>
+	// --- Market location modal ---
+	const locationModal = document.getElementById('location-modal') as HTMLDialogElement | null;
+	const locationTitle = document.getElementById('location-modal-title');
+	const locationMapPanel = document.getElementById('location-map-panel');
+	const locationParkingPanel = document.getElementById('location-parking-panel');
+	const locationClose = document.querySelector('.location-modal-close');
+
+	document.querySelectorAll<HTMLButtonElement>('.location-trigger').forEach((trigger) => {
+		trigger.addEventListener('click', () => {
+			const isParking = trigger.dataset.locationPanel === 'parking';
+			if (locationTitle) locationTitle.textContent = isParking ? 'Parking options' : 'Market map';
+			if (locationMapPanel) locationMapPanel.hidden = isParking;
+			if (locationParkingPanel) locationParkingPanel.hidden = !isParking;
+			locationModal?.showModal();
+		});
+	});
+
+	locationClose?.addEventListener('click', () => locationModal?.close());
+	locationModal?.addEventListener('click', (event) => {
+		if (event.target === locationModal) locationModal.close();
+	});
+
 	// --- Cart (client-side only; product data sourced live from Wix Stores at render time) ---
 	type CartLine = { sku: string; name: string; price: number; qty: number };
 	const CART_KEY = 'sharav-cart';
@@ -1634,6 +1862,11 @@ function priceLine(p: any): string {
 			showFormError(preorderStatus, preorderForm, 'Please enter a valid email address.', 'email');
 			return;
 		}
+		const pickup = String(fd.get('pickup') ?? '').trim();
+		if (!pickup) {
+			showFormError(preorderStatus, preorderForm, 'Please choose a pickup option.');
+			return;
+		}
 
 		if (preorderStatus) {
 			preorderStatus.textContent = 'Starting checkout…';
@@ -1644,6 +1877,7 @@ function priceLine(p: any): string {
 				full_name: fullName,
 				phone,
 				email,
+				pickup,
 				notes: fd.get('notes'),
 				cart,
 			});

@@ -24,8 +24,8 @@ function summarize(cart: CartLine[]): string {
 export const POST: APIRoute = async ({ request }) => {
 	try {
 		const body = await request.json();
-		const { full_name, email, phone, notes, cart } = body ?? {};
-		if (!full_name || !email || !phone || !Array.isArray(cart)) {
+		const { full_name, email, phone, pickup, notes, cart } = body ?? {};
+		if (!full_name || !email || !phone || !pickup || !Array.isArray(cart)) {
 			return new Response(JSON.stringify({ error: 'Missing required fields.' }), { status: 400 });
 		}
 
@@ -62,6 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
 					})),
 					metadata: {
 						customer_name: String(full_name).slice(0, 250),
+						pickup: String(pickup).slice(0, 200),
 						...(notes ? { notes: String(notes).slice(0, 500) } : {}),
 					},
 				},
@@ -86,6 +87,7 @@ export const POST: APIRoute = async ({ request }) => {
 		// order come in — payment itself is confirmed in the Square dashboard, not here.
 		try {
 			const paymentNote = 'Payment handled via Square checkout — confirm payment received before preparing.';
+			const pickupLine = `Pickup: ${pickup}`;
 			await submissions.createSubmission({
 				formId: FORM_ID,
 				submissions: {
@@ -93,7 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
 					email,
 					phone,
 					order_summary: summarize(lines),
-					notes: notes ? `${notes}\n\n${paymentNote}` : paymentNote,
+					notes: notes ? `${pickupLine}\n${notes}\n\n${paymentNote}` : `${pickupLine}\n\n${paymentNote}`,
 				},
 			});
 		} catch (err) {
