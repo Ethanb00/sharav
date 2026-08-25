@@ -358,9 +358,10 @@ function priceLine(p: any): string {
 				<form class="newsletter-form" id="newsletter-form" novalidate>
 					<div class="eyebrow gold small">{newsletter.main_label}</div>
 					<p class="body-cream-90">{newsletter.main_text}</p>
-					<input type="text" name="name" placeholder="Name (optional)" />
+					<input type="text" name="first_name_ed32" autocomplete="given-name" placeholder="First name" />
+					<input type="text" name="last_name_c908" autocomplete="family-name" placeholder="Last name" />
 					<div class="newsletter-row">
-						<input type="email" name="email" required placeholder="your@email.com" />
+						<input type="email" name="email" autocomplete="email" required placeholder="your@email.com" />
 						<button type="submit" class="btn btn-gold">{newsletter.main_cta}</button>
 					</div>
 					<p class="form-status" id="newsletter-status" role="status"></p>
@@ -386,8 +387,9 @@ function priceLine(p: any): string {
 			<form class="footer-newsletter-form" id="footer-newsletter-form" novalidate>
 				<div class="eyebrow gold small">{newsletter.footer_label}</div>
 				<div class="footer-newsletter-copy">{newsletter.footer_text}</div>
-				<input type="text" name="name" placeholder="Name (optional)" />
-				<input type="email" name="email" required placeholder="your@email.com" />
+				<input type="text" name="first_name_ed32" autocomplete="given-name" placeholder="First name" />
+				<input type="text" name="last_name_c908" autocomplete="family-name" placeholder="Last name" />
+				<input type="email" name="email" autocomplete="email" required placeholder="your@email.com" />
 				<button type="submit" class="btn btn-gold-block">{newsletter.footer_cta}</button>
 				<p class="form-status" id="footer-newsletter-status" role="status"></p>
 			</form>
@@ -1703,6 +1705,8 @@ function priceLine(p: any): string {
 			if (!form) return;
 			const fd = new FormData(form);
 			const email = String(fd.get('email') ?? '').trim();
+			const firstName = String(fd.get('first_name_ed32') ?? '').trim();
+			const lastName = String(fd.get('last_name_c908') ?? '').trim();
 			if (!isValidEmail(email)) {
 				showFormError(statusEl, form, 'Please enter a valid email address.', 'email');
 				return;
@@ -1712,7 +1716,11 @@ function priceLine(p: any): string {
 				statusEl.className = 'form-status';
 			}
 			try {
-				await postJSON('/api/newsletter', { email });
+				await postJSON('/api/newsletter', {
+					email,
+					first_name_ed32: firstName,
+					last_name_c908: lastName,
+				});
 				form.reset();
 				if (statusEl) {
 					statusEl.textContent = "You're on the list - watch for the first one.";
