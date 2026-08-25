@@ -7,6 +7,8 @@ schedule_label: "This season's schedule"
 schedule_confirm_pill: "Fall/Winter 2026"
 schedule_time: "Sundays, 9AM–1PM"
 schedule_empty: "New dates coming soon — check back shortly."
+market_link: "https://www.olneyfarmersmarket.com/"
+market_name: "Olney Farmers Market"
 market_dates:
   - "September 6, 2026"
   - "September 20, 2026"

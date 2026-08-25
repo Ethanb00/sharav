@@ -200,6 +200,8 @@ function priceLine(p: any): string {
 										) : (
 											<div class="schedule-sub">{s.day}</div>
 										)}
+										{isOlney && <a href={find.market_link} class="schedule-link" target="_blank" rel="noopener noreferrer">Learn more about the market</a>}
+
 									</div>
 									{!isOlney && <div class="schedule-time">{s.time}</div>}
 								</div>
@@ -208,7 +210,8 @@ function priceLine(p: any): string {
 					) : find.market_dates?.length > 0 ? (
 						<div class="schedule-row">
 							<div>
-								<div class="schedule-name">Olney Farmers Market</div>
+								<div class="schedule-name">{find.market_name}</div>
+								<a href={find.market_link} class="schedule-link" target="_blank" rel="noopener noreferrer">Learn more about the market</a>
 								<div class="date-list">
 									{find.schedule_time && <div class="schedule-sub-line">{find.schedule_time}</div>}
 									<div class="date-grid">
@@ -823,6 +826,16 @@ function priceLine(p: any): string {
 	.schedule-name {
 		font-size: 19px;
 		font-weight: 600;
+	}
+	.schedule-link {
+		display: inline-block;
+		margin-top: 5px;
+		font-size: 13px;
+		color: var(--gold);
+		border-bottom: 1px solid rgba(210, 150, 59, 0.6);
+	}
+	.schedule-link:hover {
+		color: var(--cream);
 	}
 	.schedule-sub {
 		font-size: 14px;
