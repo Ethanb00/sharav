@@ -135,13 +135,3 @@ npm run build     # wix build
 npm run release   # wix release — publishes to the live Wix site
 ```
 
-## Migration note
-
-This project replaced an earlier Eleventy + Decap CMS + GitHub Pages setup (still recoverable via
-`git log` on `main` before this change). That stack's dedicated Cloudflare Worker
-(`sharav-cms-auth`) is no longer used and can be deleted from the Cloudflare dashboard.
-
-This Astro project runs on a **newly provisioned** Wix site (Wix-Managed Headless always
-provisions a fresh site per project — there's no supported way to attach it to a pre-existing
-one). The `eatsharav.com` custom domain and Premium plan need to be moved over from the old Wix
-site ("Sharav - Mizrahi Cuisine") to this one via the Wix dashboard.
