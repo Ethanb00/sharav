@@ -100,13 +100,19 @@ function priceLine(p: any): string {
 			<a href="#top" aria-label="Sharav home">
 				<img src="/images/brand/logo-h-terracotta.svg" alt="Sharav - Mizrahi Cuisine" class="wordmark-img" />
 			</a>
-			<nav class="site-nav">
+			<nav class="site-nav" id="site-nav">
 				<a href="#food">The Food</a>
 				<a href="#find">Find Us</a>
 				<a href="#story">Our Story</a>
 				<a href="#catering">Catering</a>
-				<a href="#order" class="nav-cta">Preorder · <span id="cart-count">0</span></a>
+				<a href="#newsletter">Newsletter</a>
 			</nav>
+			<div class="header-actions">
+				<a href="#order" class="nav-cta">Preorder · <span id="cart-count">0</span></a>
+				<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav">
+					<span></span><span></span><span></span>
+				</button>
+			</div>
 		</div>
 	</header>
 
@@ -416,7 +422,7 @@ function priceLine(p: any): string {
 					))}
 				</div>
 			</div>
-			<div class="side-col">
+			<div class="side-col" id="newsletter">
 				<form class="newsletter-form" id="newsletter-form" novalidate>
 					<div class="eyebrow gold small">{newsletter.main_label}</div>
 					<p class="body-cream-90">{newsletter.main_text}</p>
@@ -466,6 +472,7 @@ function priceLine(p: any): string {
 					<div class="eyebrow gold small">More</div>
 					<a href="#story">Our story</a>
 					<a href="#catering">Catering</a>
+					<a href="#newsletter">Newsletter</a>
 					<a href={site.instagram_url} target="_blank" rel="noopener">{site.instagram_handle}</a>
 				</div>
 			</div>
@@ -474,6 +481,30 @@ function priceLine(p: any): string {
 			<div class="wrap footer-bottom-text">© {new Date().getFullYear()} Sharav · Made by hand in Maryland 🌻</div>
 		</div>
 	</footer>
+
+	<button type="button" class="cart-fab" id="cart-fab" aria-label="View your order">
+		<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<circle cx="9" cy="21" r="1"></circle>
+			<circle cx="19" cy="21" r="1"></circle>
+			<path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21.5 7H6"></path>
+		</svg>
+		<span class="cart-fab-count" id="cart-fab-count">0</span>
+	</button>
+
+	<dialog id="cart-modal" class="location-modal cart-modal">
+		<div class="location-modal-head">
+			<h2 id="cart-modal-title">Your order</h2>
+			<button type="button" class="location-modal-close" id="cart-modal-close" aria-label="Close your order">&times;</button>
+		</div>
+		<ul class="cart-lines" id="cart-modal-lines">
+			<li class="cart-empty" id="cart-modal-empty">Nothing added yet - pick from the food above.</li>
+		</ul>
+		<div class="cart-subtotal">
+			<span class="eyebrow olive small">Subtotal</span>
+			<span class="cart-total" id="cart-modal-total">$0</span>
+		</div>
+		<a href="#order" class="btn btn-rust btn-block location-modal-cta" id="cart-modal-checkout">Go to checkout</a>
+	</dialog>
 </Layout>
 
 <style>
@@ -1482,6 +1513,7 @@ function priceLine(p: any): string {
 		display: flex;
 		flex-direction: column;
 		gap: 32px;
+		scroll-margin-top: 100px;
 	}
 	.newsletter-form {
 		background: var(--espresso);
@@ -1653,6 +1685,53 @@ function priceLine(p: any): string {
 		}
 	}
 
+	/* Floating cart (mobile only) */
+	.cart-fab {
+		display: none;
+		position: fixed;
+		right: 20px;
+		bottom: 20px;
+		z-index: 60;
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		border: 0;
+		padding: 0;
+		background: var(--rust);
+		color: var(--cream);
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		box-shadow: 0 8px 20px rgba(65, 46, 21, 0.35);
+	}
+	.cart-fab:hover {
+		background: var(--espresso);
+	}
+	.cart-fab-count {
+		position: absolute;
+		top: -4px;
+		right: -4px;
+		min-width: 20px;
+		height: 20px;
+		padding: 0 5px;
+		border-radius: 10px;
+		background: var(--gold);
+		color: var(--espresso);
+		font-size: 11px;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.cart-modal {
+		width: min(420px, calc(100% - 32px));
+	}
+	@media (max-width: 1000px) {
+		.cart-fab.visible {
+			display: flex;
+		}
+	}
+
 	.form-status {
 		min-height: 1.2em;
 		font-size: 13.5px;
@@ -1686,6 +1765,20 @@ function priceLine(p: any): string {
 </script>
 
 <script>
+	// --- Mobile nav toggle ---
+	const navToggle = document.getElementById('nav-toggle');
+	const siteNav = document.getElementById('site-nav');
+	navToggle?.addEventListener('click', () => {
+		const open = siteNav?.classList.toggle('open');
+		navToggle.setAttribute('aria-expanded', String(!!open));
+	});
+	siteNav?.querySelectorAll('a').forEach((link) => {
+		link.addEventListener('click', () => {
+			siteNav.classList.remove('open');
+			navToggle?.setAttribute('aria-expanded', 'false');
+		});
+	});
+
 	// --- Market location modal ---
 	const locationModal = document.getElementById('location-modal') as HTMLDialogElement | null;
 	const locationTitle = document.getElementById('location-modal-title');
@@ -1708,6 +1801,19 @@ function priceLine(p: any): string {
 		if (event.target === locationModal) locationModal.close();
 	});
 
+	// --- Floating cart (mobile) ---
+	const cartFab = document.getElementById('cart-fab');
+	const cartModal = document.getElementById('cart-modal') as HTMLDialogElement | null;
+	const cartModalClose = document.getElementById('cart-modal-close');
+	const cartModalCheckout = document.getElementById('cart-modal-checkout');
+
+	cartFab?.addEventListener('click', () => cartModal?.showModal());
+	cartModalClose?.addEventListener('click', () => cartModal?.close());
+	cartModal?.addEventListener('click', (event) => {
+		if (event.target === cartModal) cartModal.close();
+	});
+	cartModalCheckout?.addEventListener('click', () => cartModal?.close());
+
 	// --- Cart (client-side only; product data sourced live from Wix Stores at render time) ---
 	type CartLine = { sku: string; name: string; price: number; qty: number };
 	const CART_KEY = 'sharav-cart';
@@ -1722,20 +1828,16 @@ function priceLine(p: any): string {
 	function saveCart(cart: CartLine[]) {
 		localStorage.setItem(CART_KEY, JSON.stringify(cart));
 	}
-	function renderCart() {
-		const cart = loadCart();
-		const linesEl = document.getElementById('cart-lines');
-		const emptyEl = document.getElementById('cart-empty');
-		const totalEl = document.getElementById('cart-total');
-		const countEl = document.getElementById('cart-count');
-		if (!linesEl || !totalEl || !countEl) return;
+	function renderCartInto(linesId: string, emptyId: string, totalId: string, cart: CartLine[]) {
+		const linesEl = document.getElementById(linesId);
+		const emptyEl = document.getElementById(emptyId);
+		const totalEl = document.getElementById(totalId);
+		if (!linesEl || !totalEl) return 0;
 
 		linesEl.querySelectorAll('[data-cart-line]').forEach((el) => el.remove());
 		let total = 0;
-		let count = 0;
 		for (const line of cart) {
 			total += line.price * line.qty;
-			count += line.qty;
 			const li = document.createElement('li');
 			li.className = 'cart-line';
 			li.setAttribute('data-cart-line', line.sku);
@@ -1745,7 +1847,6 @@ function priceLine(p: any): string {
 		}
 		if (emptyEl) emptyEl.style.display = cart.length ? 'none' : '';
 		totalEl.textContent = `$${total.toFixed(0)}`;
-		countEl.textContent = String(count);
 
 		linesEl.querySelectorAll('[data-remove]').forEach((btn) => {
 			btn.addEventListener('click', () => {
@@ -1760,6 +1861,22 @@ function priceLine(p: any): string {
 				renderCart();
 			});
 		});
+		return total;
+	}
+
+	function renderCart() {
+		const cart = loadCart();
+		const countEl = document.getElementById('cart-count');
+		const fab = document.getElementById('cart-fab');
+		const fabCount = document.getElementById('cart-fab-count');
+		const count = cart.reduce((sum, l) => sum + l.qty, 0);
+
+		renderCartInto('cart-lines', 'cart-empty', 'cart-total', cart);
+		renderCartInto('cart-modal-lines', 'cart-modal-empty', 'cart-modal-total', cart);
+
+		if (countEl) countEl.textContent = String(count);
+		if (fabCount) fabCount.textContent = String(count);
+		fab?.classList.toggle('visible', count > 0);
 	}
 
 	document.addEventListener('click', (e) => {
