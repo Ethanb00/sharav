@@ -149,7 +149,7 @@ function priceLine(p: any): string {
 					const meta = MENU_META[p.name];
 					const img = imgSrc(meta.image, 500, 460);
 					return (
-						<article class="dish-card" data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'}>
+						<article class="dish-card" data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'} data-monday-available={String(meta.mondayAvailable !== false)}>
 							{img ? (
 								<img src={img} alt={p.name} class="dish-img" />
 							) : (
@@ -172,7 +172,7 @@ function priceLine(p: any): string {
 					{darkDishes.map((p) => {
 						const meta = MENU_META[p.name];
 						return (
-							<div class={`dish-dark dish-dark-${meta.dark}`} data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'}>
+							<div class={`dish-dark dish-dark-${meta.dark}`} data-sku={meta.sku} data-name={p.name} data-price={p.actualPriceRange?.minValue?.amount ?? '0'} data-monday-available={String(meta.mondayAvailable !== false)}>
 								<div class="dish-dark-head">
 									<h3>{p.name}</h3>
 									<div class="dish-dark-price">{priceLine(p)}</div>
@@ -309,17 +309,18 @@ function priceLine(p: any): string {
 					<div class="pickup-select">
 						<div class="eyebrow small">Pickup</div>
 						<div class="pickup-options">
-							<label class="pickup-option">
-								<input type="radio" name="pickup" value={`Market pickup — ${nextPickup.market}`} required />
+							<label class="pickup-option" data-pickup-day="sunday">
+								<input type="radio" name="pickup" value={`Market pickup — ${nextPickup.market}`} data-pickup-day="sunday" required />
 								<span class="pickup-option-name">Market pickup</span>
 								<span class="pickup-option-date">{nextPickup.market}</span>
 							</label>
-							<label class="pickup-option">
-								<input type="radio" name="pickup" value={`North Bethesda pickup — ${nextPickup.monday}`} />
+							<label class="pickup-option" data-pickup-day="monday">
+								<input type="radio" name="pickup" value={`North Bethesda pickup — ${nextPickup.monday}`} data-pickup-day="monday" />
 								<span class="pickup-option-name">North Bethesda pickup</span>
 								<span class="pickup-option-date">{nextPickup.monday}</span>
 							</label>
 						</div>
+						<p class="pickup-restriction-note" id="pickup-monday-note" hidden>Mint Tea and Pita are only available for Sunday market pickup.</p>
 					</div>
 				)}
 				<div class="form-row-2">
@@ -1228,6 +1229,15 @@ function priceLine(p: any): string {
 		font-size: 13px;
 		color: var(--olive);
 	}
+	.pickup-option.disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+	.pickup-restriction-note {
+		margin: 0;
+		font-size: 13px;
+		color: var(--rust);
+	}
 	.form-row-2 {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -1864,6 +1874,31 @@ function priceLine(p: any): string {
 		return total;
 	}
 
+	// SKUs that can only be picked up at the Sunday market (see mondayAvailable in
+	// src/data/menu/types.ts). Read from the DOM so it stays in sync with the menu.
+	const MONDAY_RESTRICTED_SKUS: Set<string> = new Set(
+		Array.from(document.querySelectorAll<HTMLElement>('[data-sku][data-monday-available="false"]'))
+			.map((el) => el.dataset.sku!)
+			.filter(Boolean),
+	);
+
+	function cartHasMondayRestricted(cart: CartLine[]): boolean {
+		return cart.some((l) => MONDAY_RESTRICTED_SKUS.has(l.sku));
+	}
+
+	function updateMondayAvailability(cart: CartLine[]) {
+		const mondayInput = document.querySelector<HTMLInputElement>('input[name="pickup"][data-pickup-day="monday"]');
+		const mondayLabel = document.querySelector<HTMLElement>('.pickup-option[data-pickup-day="monday"]');
+		const note = document.getElementById('pickup-monday-note');
+		const restricted = cartHasMondayRestricted(cart);
+		if (mondayInput) {
+			mondayInput.disabled = restricted;
+			if (restricted && mondayInput.checked) mondayInput.checked = false;
+		}
+		if (mondayLabel) mondayLabel.classList.toggle('disabled', restricted);
+		if (note) note.hidden = !restricted;
+	}
+
 	function renderCart() {
 		const cart = loadCart();
 		const countEl = document.getElementById('cart-count');
@@ -1877,6 +1912,7 @@ function priceLine(p: any): string {
 		if (countEl) countEl.textContent = String(count);
 		if (fabCount) fabCount.textContent = String(count);
 		fab?.classList.toggle('visible', count > 0);
+		updateMondayAvailability(cart);
 	}
 
 	document.addEventListener('click', (e) => {
@@ -1982,6 +2018,10 @@ function priceLine(p: any): string {
 		const pickup = String(fd.get('pickup') ?? '').trim();
 		if (!pickup) {
 			showFormError(preorderStatus, preorderForm, 'Please choose a pickup option.');
+			return;
+		}
+		if (pickup.startsWith('North Bethesda pickup') && cartHasMondayRestricted(cart)) {
+			showFormError(preorderStatus, preorderForm, 'Mint Tea and Pita are only available for Sunday market pickup. Choose Sunday, or remove them from your cart.');
 			return;
 		}
 

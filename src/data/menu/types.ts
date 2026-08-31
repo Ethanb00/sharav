@@ -10,4 +10,9 @@ export interface MenuItem {
 	 * Manager — or a path to a file in `public/images/` (e.g. `/images/dishes/hummus.jpg`).
 	 * Leave unset to show the "Photo coming soon" placeholder. */
 	image?: string;
+	/** Set to `false` for items that can only be picked up at the Sunday market
+	 * (e.g. items that don't travel well or need a same-day handoff). Defaults to
+	 * true when unset. When any cart item has this set to `false`, the order form
+	 * disables the Monday North Bethesda pickup option. */
+	mondayAvailable?: boolean;
 }
