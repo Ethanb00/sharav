@@ -99,6 +99,17 @@ order is also logged as a Wix Forms submission for visibility in the dashboard, 
 the source of truth for whether payment actually cleared — check the Square dashboard before
 preparing an order.
 
+Every payment link carries a **6% Maryland sales tax**, applied at order scope on the Square
+side (`order.taxes[]` with `scope: 'ORDER'`, labelled "MD sales tax (6%)" on the receipt). It is
+a single hardcoded rate in `preorder.ts` — changing the rate is a code deploy, not a Square
+dashboard tweak.
+
+Each Wix Forms submission's `notes` field ends with a **`Square order: <order_id> · payment
+link: <payment_link.id>`** line, captured from the Square response before the redirect. That is
+what lets an operator in the Wix dashboard find the matching Square payment without hunting by
+timestamp; `(unknown)` in either slot means Square returned an unusual shape and the operator
+should reconcile by hand.
+
 This needs two secrets (declared in `astro.config.mjs`'s `env.schema`, read via
 `astro:env/server` in `preorder.ts`):
 
