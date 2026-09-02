@@ -60,6 +60,12 @@ export const POST: APIRoute = async ({ request }) => {
 						quantity: String(l.qty),
 						base_price_money: { amount: Math.round(l.price * 100), currency: 'USD' },
 					})),
+					// Maryland state sales tax on prepared food. Order-scoped so it applies to
+					// the whole subtotal in a single receipt line — no per-line wiring needed.
+					// The name is what the customer sees on their Square receipt.
+					taxes: [
+						{ uid: 'md-sales-tax', name: 'MD sales tax (6%)', percentage: '6.0', scope: 'ORDER' },
+					],
 					metadata: {
 						customer_name: String(full_name).slice(0, 250),
 						pickup: String(pickup).slice(0, 200),
@@ -85,9 +91,17 @@ export const POST: APIRoute = async ({ request }) => {
 
 		// Best-effort internal record so the existing Wix Forms/Contacts workflow still sees the
 		// order come in — payment itself is confirmed in the Square dashboard, not here.
+		// Square's identifiers are appended to notes so a submission in the Wix dashboard
+		// can be reconciled against a Square payment without hunting by timestamp.
 		try {
 			const paymentNote = 'Payment handled via Square checkout — confirm payment received before preparing.';
 			const pickupLine = `Pickup: ${pickup}`;
+			const squareOrderId = squareData.payment_link.order_id;
+			const squarePaymentLinkId = squareData.payment_link.id;
+			const squareRefLine = `Square order: ${squareOrderId ?? '(unknown)'} · payment link: ${squarePaymentLinkId ?? '(unknown)'}`;
+			const combinedNotes = notes
+				? `${pickupLine}\n${notes}\n\n${paymentNote}\n${squareRefLine}`
+				: `${pickupLine}\n\n${paymentNote}\n${squareRefLine}`;
 			await submissions.createSubmission({
 				formId: FORM_ID,
 				submissions: {
@@ -95,7 +109,7 @@ export const POST: APIRoute = async ({ request }) => {
 					email,
 					phone,
 					order_summary: summarize(lines),
-					notes: notes ? `${pickupLine}\n${notes}\n\n${paymentNote}` : `${pickupLine}\n\n${paymentNote}`,
+					notes: combinedNotes,
 				},
 			});
 		} catch (err) {
