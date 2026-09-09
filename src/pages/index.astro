@@ -77,6 +77,15 @@ if (marketDates.length > 0) {
 	nextPickup = { market: formatPickupDate(upcoming), monday: formatPickupDate(monday) };
 }
 
+// Only show market dates that haven't happened yet.
+const upcomingMarketDates: string[] = marketDates
+	.filter((d) => {
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		return new Date(d).getTime() >= today.getTime();
+	})
+	.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
 function priceLine(p: any): string {
 	const amount = Number(p.actualPriceRange?.minValue?.amount ?? 0);
 	const suffix: Record<string, string> = {
@@ -200,7 +209,6 @@ function priceLine(p: any): string {
 					</div>
 					<div class="location-actions" aria-label="Market location information">
 						<button type="button" class="location-trigger" data-location-panel="map">View map</button>
-						<button type="button" class="location-trigger" data-location-panel="parking">Parking options</button>
 					</div>
 				</div>
 				<div class="schedule">
@@ -211,7 +219,7 @@ function priceLine(p: any): string {
 
 					{schedule.length > 0 ? (
 						schedule.map((s) => {
-							const isOlney = /olney/i.test(s.market ?? '') && find.market_dates?.length > 0;
+							const isOlney = /olney/i.test(s.market ?? '') && upcomingMarketDates.length > 0;
 							return (
 								<div class="schedule-row">
 									<div>
@@ -220,7 +228,7 @@ function priceLine(p: any): string {
 											<div class="date-list">
 												{find.schedule_time && <div class="schedule-sub-line">{find.schedule_time}</div>}
 												<div class="date-grid">
-													{find.market_dates.map((d: string) => (
+													{upcomingMarketDates.map((d: string) => (
 														<div class="date-chip">{formatMarketDate(d)}</div>
 													))}
 												</div>
@@ -235,7 +243,7 @@ function priceLine(p: any): string {
 								</div>
 							);
 						})
-					) : find.market_dates?.length > 0 ? (
+					) : upcomingMarketDates.length > 0 ? (
 						<div class="schedule-row">
 							<div>
 								<div class="schedule-name">{find.market_name}</div>
@@ -243,7 +251,7 @@ function priceLine(p: any): string {
 								<div class="date-list">
 									{find.schedule_time && <div class="schedule-sub-line">{find.schedule_time}</div>}
 									<div class="date-grid">
-										{find.market_dates.map((d: string) => (
+										{upcomingMarketDates.map((d: string) => (
 											<div class="date-chip">{formatMarketDate(d)}</div>
 										))}
 									</div>
@@ -264,10 +272,6 @@ function priceLine(p: any): string {
 			</div>
 			<div id="location-map-panel">
 				<iframe src="https://snazzymaps.com/embed/808822" title="Map of the farmers market" loading="lazy"></iframe>
-			</div>
-			<div id="location-parking-panel" hidden>
-				<p>Parking availability can change on market days. Check the market website for the latest parking guidance before you come.</p>
-				<a href={find.market_link} class="btn btn-rust location-modal-cta" target="_blank" rel="noopener noreferrer">Visit the market website</a>
 			</div>
 		</dialog>
 
