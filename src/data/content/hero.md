@@ -10,6 +10,6 @@ places:
   - "Bethesda"
   - "Wheaton"
 sub: "Small-batch Mizrahi dishes, made by hand each week."
-cta_primary: "Preorder for pickup"
+cta_primary: "Pre-order for pickup"
 cta_secondary: "Find us at the market"
 ---

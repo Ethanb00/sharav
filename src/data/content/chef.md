@@ -15,4 +15,4 @@ I reignited a serious passion for cooking after meeting my wife in 2024 and, tru
 
 By then it didn't matter. I'd fallen for the food and culture of Mizrahi Jews, the cuisine of North Africa, Yemen, and the Levant, and for the story it carries: communities displaced from their homelands who brought their food with them when they lost nearly everything else.
 
-October 7th effected all Jews differently. For me, beyond the obvious profound sorrow and pain, I felt an ever-rising desperation for peace. Cooking a cuisine born of coexistence, food shaped over centuries by Jewish and Arab neighbors who shared space and ingredients, feels, in a small way, my insistence that shared humanity, and a shared meal, can be the first step toward peace.
+October 7th affected all Jews differently. For me, beyond the obvious profound sorrow and pain, I felt an ever-rising desperation for peace. Cooking a cuisine born of coexistence, food shaped over centuries by Jewish and Arab neighbors who shared space and ingredients, feels, in a small way, like my insistence that shared humanity, and a shared meal, can be the first step toward peace.

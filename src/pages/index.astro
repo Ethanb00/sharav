@@ -101,14 +101,14 @@ function priceLine(p: any): string {
 				<img src="/images/brand/logo-h-terracotta.svg" alt="Sharav - Mizrahi Cuisine" class="wordmark-img" />
 			</a>
 			<nav class="site-nav" id="site-nav">
-				<a href="#food">The Food</a>
-				<a href="#find">Find Us</a>
-				<a href="#story">Our Story</a>
+				<a href="#food">The food</a>
+				<a href="#find">Find us</a>
+				<a href="#story">Our story</a>
 				<a href="#catering">Catering</a>
 				<a href="#newsletter">Newsletter</a>
 			</nav>
 			<div class="header-actions">
-				<a href="#order" class="nav-cta">Preorder · <span id="cart-count">0</span></a>
+				<a href="#order" class="nav-cta">Pre-order · <span id="cart-count">0</span></a>
 				<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav">
 					<span></span><span></span><span></span>
 				</button>
@@ -129,7 +129,7 @@ function priceLine(p: any): string {
 				<div class="hero-tag">{site.location_tag}</div>
 			</div>
 			<div class="hero-img">
-				{heroImage && <img src={heroImage} alt="Hummus with olive oil, sumac and pine nuts" />}
+				{heroImage && <img src={heroImage} alt="Hummus with olive oil, sumac, and pine nuts" />}
 			</div>
 		</section>
 
@@ -310,12 +310,12 @@ function priceLine(p: any): string {
 						<div class="eyebrow small">Pickup</div>
 						<div class="pickup-options">
 							<label class="pickup-option" data-pickup-day="sunday">
-								<input type="radio" name="pickup" value={`Market pickup — ${nextPickup.market}`} data-pickup-day="sunday" required />
+								<input type="radio" name="pickup" value={`Market pickup - ${nextPickup.market}`} data-pickup-day="sunday" required />
 								<span class="pickup-option-name">Market pickup</span>
 								<span class="pickup-option-date">{nextPickup.market}</span>
 							</label>
 							<label class="pickup-option" data-pickup-day="monday">
-								<input type="radio" name="pickup" value={`North Bethesda pickup — ${nextPickup.monday}`} data-pickup-day="monday" />
+								<input type="radio" name="pickup" value={`North Bethesda pickup - ${nextPickup.monday}`} data-pickup-day="monday" />
 								<span class="pickup-option-name">North Bethesda pickup</span>
 								<span class="pickup-option-date">{nextPickup.monday}</span>
 							</label>
@@ -400,7 +400,7 @@ function priceLine(p: any): string {
 					</div>
 					<div class="form-row-2">
 						<input type="date" name="event_date" required />
-						<input type="number" name="guest_count" placeholder="Guests" min="1" required />
+						<input type="number" name="guest_count" placeholder="Number of guests" min="1" required />
 					</div>
 					<textarea name="occasion" rows="3" placeholder="What's the occasion?" required></textarea>
 					<p class="form-status" id="catering-status" role="status"></p>

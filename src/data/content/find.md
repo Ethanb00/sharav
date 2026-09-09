@@ -5,8 +5,8 @@ intro: "You'll find us at the Olney Farmers Market. Everything is made the day b
 contact_label: "Questions before you come"
 schedule_label: "This season's schedule"
 schedule_confirm_pill: "Fall/Winter 2026"
-schedule_time: "Sundays, 9AM–1PM"
-schedule_empty: "New dates coming soon — check back shortly."
+schedule_time: "Sundays, 9 AM - 1 PM"
+schedule_empty: "New dates coming soon - check back shortly."
 market_link: "https://www.olneyfarmersmarket.com/"
 market_name: "Olney Farmers Market"
 market_dates:
