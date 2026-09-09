@@ -9,7 +9,7 @@ byline: "Ethan, Chef/Owner, Sharav"
 
 Mizrahi means "Eastern" - the Jews of Iraq and Iran, Yemen and Syria, Morocco and Tunisia,Egypt and Kurdistan. These Jews have lived in those communities for millennia, long before the modern state of Israel was established. In the the span of a single generation, in the mid-20th Century, nearly a million Jews left, fled, or were forced from the land that their families had called home.
 
-This sudden exodus scattered communities to France and US and Canada, though the vast majority chose to resettle in Israel. Whether out of convenience, financial limitation, the urgent need for safety, or a deeper desire to remain in a familiar place, this migration quietly helped shape the culinary landscapes of their new homes. Yet, in the rush to assimilate and rebuild, many of the distinct flavors and heirloom recipes passed down through centuries began to fade.
+This sudden exodus scattered communities to France, the US, and Canada, though the vast majority chose to resettle in Israel. Whether out of convenience, financial limitation, the urgent need for safety, or a deeper desire to remain in a familiar place, this migration quietly helped shape the culinary landscapes of their new homes. Yet, in the rush to assimilate and rebuild, many of the distinct flavors and heirloom recipes passed down through centuries began to fade.
 
 At Sharav, we cook to reclaim those ancient traditions. We seek to reaffirm this branch of Jewry as co-owners of the foods of the desert, in peace, just as these communities have always shared in the heat of the Sharav wind. The vibrant ingredients of this cuisine belong to no single people; they are an enduring, deeply rooted legacy.
 
