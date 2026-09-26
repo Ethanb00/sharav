@@ -95,7 +95,6 @@ function priceLine(p: any): string {
 		muhammara: '8 oz',
 		carrot: '8 oz',
 		pita: 'two',
-		tea: '',
 	};
 	const sku = MENU_META[p.name]?.sku ?? '';
 	const s = suffix[sku];
@@ -324,7 +323,7 @@ function priceLine(p: any): string {
 								<span class="pickup-option-date">{nextPickup.monday}</span>
 							</label>
 						</div>
-						<p class="pickup-restriction-note" id="pickup-monday-note" hidden>Mint Tea and Pita are only available for Sunday market pickup.</p>
+						<p class="pickup-restriction-note" id="pickup-monday-note" hidden>Pita is only available for Sunday market pickup.</p>
 					</div>
 				)}
 				<div class="form-row-2">
@@ -2025,7 +2024,7 @@ function priceLine(p: any): string {
 			return;
 		}
 		if (pickup.startsWith('North Bethesda pickup') && cartHasMondayRestricted(cart)) {
-			showFormError(preorderStatus, preorderForm, 'Mint Tea and Pita are only available for Sunday market pickup. Choose Sunday, or remove them from your cart.');
+			showFormError(preorderStatus, preorderForm, 'Pita is only available for Sunday market pickup. Choose Sunday, or remove it from your cart.');
 			return;
 		}
 
