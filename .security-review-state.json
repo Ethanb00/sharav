@@ -1,263 +1,17 @@
 {
   "reviewed": {
-    "astro@GHSA-j687-52p2-xcff": {
-      "verdict": "Runtime dep (SSR). define:vars is used once (index.astro hero rotator) but only with site-owner content-collection data, never request-controlled input -- not reachable. No 5.x patch exists and astro>=6 is blocked by @wix/astro and @wix/astro-wix-hosting-adapter peer-pinning astro ^5.0.0.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-xr5h-phrj-8vxv": {
-      "verdict": "Server islands (server:defer) are not used anywhere in src/ -- not reachable. Same astro 5.x/peer-dep blocker as other astro GHSAs.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-jrpj-wcv7-9fh9": {
-      "verdict": "No spread-props ({...x}) usage in any .astro component -- not reachable. Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-f48w-9m4c-m7f5": {
-      "verdict": "No spread-props usage in any component -- not reachable (incomplete-fix follow-up to GHSA-jrpj-wcv7-9fh9). Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-7pw4-f3q4-r2p2": {
-      "verdict": "No Astro transition:* directives or ClientRouter/ViewTransitions usage (only unrelated CSS `transition` properties found) -- not reachable. Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-4g3v-8h47-v7g6": {
-      "verdict": "No View Transitions usage anywhere in src/ -- not reachable. Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-2pvr-wf23-7pc7": {
-      "verdict": "No custom prerendered 404/500 error pages exist in src/pages -- not reachable. Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-8hv8-536x-4wqp": {
-      "verdict": "Only one static, unnamed <slot /> exists (Layout.astro); no dynamic/user-controlled slot names -- not reachable. Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-26w7-cxv4-gfx2": {
-      "verdict": "Critical (RCE via AVIF), but astro:assets/<Image>/getImage() are unused anywhere in src/ (confirmed by grep) -- this pipeline never executes, at build or at runtime. Not reachable. Same astro 5.x/peer-dep blocker (no 5.x backport exists; fix landed in astro>=7.2.8).",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "astro@GHSA-376h-93r7-7g6f": {
-      "verdict": "astro.config.mjs sets no `base` option, so the vulnerable base-stripping path-boundary check is never exercised -- not reachable. Same astro 5.x/peer-dep blocker.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "js-yaml@GHSA-2883-xcg3-v3hh": {
-      "verdict": "Runtime dep chain (astro -> @astrojs/markdown-remark -> js-yaml) used for content-collection frontmatter parsing, which does run per-SSR-request in this output:\"server\" app, but only against site-owner-authored content files, never attacker-supplied input -- not externally reachable. Fixed this run: bumped 4.3.1 -> 4.3.2 (within parent's declared ^4.1.1 range, no major bump, build-verified).",
-      "fixAvailable": true,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "svgo@GHSA-w27v-7q3p-w38r": {
-      "verdict": "Only invoked by astro's asset-optimization pipeline (astro:assets/<Image>), which is unused anywhere in src/ -- not reachable regardless of severity. Fixed this run: bumped 4.0.2 -> 4.1.0 (within astro's declared ^4.0.0 range, no major bump, build-verified).",
-      "fixAvailable": true,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "svgo@GHSA-4vpr-x523-8j87": {
-      "verdict": "Same astro:assets-only usage as GHSA-w27v-7q3p-w38r -- not reachable. Fixed this run alongside it (svgo 4.0.2 -> 4.1.0).",
-      "fixAvailable": true,
-      "lastReviewedAt": "2026-09-26"
-    },
     "@astrojs/cloudflare@GHSA-88gm-j2wx-58h6": {
       "verdict": "Low-severity SSRF via the Cloudflare Images-binding image-transform endpoint. astro.config.mjs does not configure a Cloudflare Images binding image service (default imageService is \"compile\", and astro:assets is unused entirely) -- this endpoint is never wired up. Not reachable. fixAvailable is false because the patched adapter version (>=13.1.10) isn't resolvable within current wrangler/astro peer constraints.",
       "fixAvailable": false,
       "lastReviewedAt": "2026-09-26"
     },
-    "tar@GHSA-34x7-hfp2-rc4v": {
-      "verdict": "Pure CLI/build tooling (@wix/cli -> node-gyp -> make-fetch-happen/cacache -> tar), used only for node-gyp's native-toolchain fetching during `wix` CLI operations; never shipped to or executed on the production server. Native builds are already skipped via --ignore-scripts. npm's fixAvailable names @wix/cli@1.0.1, but that is an old pre-node-gyp-dependency release, not a real upgrade path -- verified the current latest @wix/cli (1.1.251) still depends on the same vulnerable node-gyp ^8.4.1 range. Blocked until @wix/cli bumps its own node-gyp dependency upstream.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-8qq5-rm4j-mr97": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain as GHSA-34x7-hfp2-rc4v -- not reachable in production, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-83g3-92jg-28cx": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-qffp-2rhf-9h96": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-9ppj-qmqm-q256": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-r6q2-hw4h-h46w": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-vmf3-w455-68vh": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-w8wr-v893-vjvp": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-23hp-3jrh-7fpw": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-8x88-c5mf-7j5w": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-gvwx-54wh-qm9j": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "tar@GHSA-r292-9mhp-454m": {
-      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
     "@tootallnate/once@GHSA-vpq2-c234-7xj6": {
       "verdict": "Low severity, same @wix/cli/node-gyp CLI-tooling-only chain as the tar@* entries above -- never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, not a real upgrade path (see @wix/cli@transitive). Blocked upstream.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "esbuild@GHSA-g7r4-m6w7-qqqr": {
-      "verdict": "Build-time only (via vite, used by @astrojs/react's bundler); esbuild's dev server is never present in the shipped server or client bundles. Not reachable. fixAvailable is false because vite pins an incompatible esbuild range.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "sharp@GHSA-f88m-g3jw-g9cj": {
-      "verdict": "Two paths, both unreachable: (1) astro's optional image pipeline (astro:assets), confirmed unused anywhere in src/; (2) miniflare's local-dev-only Workers simulation. Cloudflare Workers production runtime never executes sharp regardless (default imageService \"compile\" doesn't run sharp at runtime; sharp only ever runs locally during wix build/dev). Not reachable in production. fixAvailable false.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "sharp@GHSA-rgj7-g3m4-5g8c": {
-      "verdict": "Same dual unreachable path as GHSA-f88m-g3jw-g9cj (libheif vuln). Not reachable in production. fixAvailable false.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-g9mf-h72j-4rw9": {
-      "verdict": "Via wrangler -> miniflare, which simulates the Cloudflare Workers runtime only for local dev/preview (`wix dev`/`wix preview`); production traffic runs on Cloudflare's real infrastructure, not miniflare. Not reachable on the live site. fixAvailable false (wrangler pins this range).",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-f269-vfmq-vjvj": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-2mjp-6q6p-2qxm": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-vrm6-8vpv-qv8q": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-v9p9-hfj2-hcw8": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-4992-7rv2-5pvq": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-p88m-4jfj-68fv": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-vxpw-j846-p89q": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-g8m3-5g58-fq7m": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-pr7r-676h-xcf6": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-8xcm-r25x-g524": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-4cwx-7wf7-3272": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-m8rv-5g2x-5cg5": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-jr45-8vmc-qm54": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-v3r7-h72x-cjcm": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "undici@GHSA-35p6-xmwp-9g52": {
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "ws@GHSA-58qx-3vcg-4xpx": {
-      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production. fixAvailable false.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "ws@GHSA-96hv-2xvq-fx4p": {
-      "verdict": "Same wrangler/miniflare local-dev-only chain -- not reachable in production. fixAvailable false.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "wrangler@transitive": {
-      "verdict": "No own advisory; inherits from miniflare (local-dev-only Workers simulation used by `wix dev`/`wix preview`, not the production runtime). fixAvailable false.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "miniflare@transitive": {
-      "verdict": "No own advisory; inherits from sharp/undici/ws. Simulates the Cloudflare Workers runtime for local dev/preview only -- production traffic runs on Cloudflare's real infrastructure. fixAvailable false.",
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26"
-    },
-    "@wix/cli@transitive": {
-      "verdict": "No own advisory; inherits from node-gyp. Pure CLI/build tooling, never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, an old pre-node-gyp-dependency release, not a real upgrade -- latest real release (1.1.251) still depends on the same vulnerable node-gyp range. Blocked upstream.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
-      "lastReviewedAt": "2026-09-26"
-    },
-    "@wix/astro@transitive": {
-      "verdict": "No own advisory; inherits from astro. Same astro 5.x/peer-dep blocker as the astro@* entries above -- npm's fixAvailable names @wix/astro@1.0.4, an old release that predates the peer-dep pin, not a real forward upgrade path (verified latest real @wix/astro, 2.74.0, still peer-pins astro ^5.0.0).",
-      "fixAvailable": {"name": "@wix/astro", "version": "1.0.4", "isSemVerMajor": true},
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
       "lastReviewedAt": "2026-09-26"
     },
     "@wix/astro-pages@transitive": {
@@ -270,24 +24,371 @@
       "fixAvailable": false,
       "lastReviewedAt": "2026-09-26"
     },
+    "@wix/astro@transitive": {
+      "verdict": "No own advisory; inherits from astro. Same astro 5.x/peer-dep blocker as the astro@* entries above -- npm's fixAvailable names @wix/astro@1.0.4, an old release that predates the peer-dep pin, not a real forward upgrade path (verified latest real @wix/astro, 2.74.0, still peer-pins astro ^5.0.0).",
+      "fixAvailable": {
+        "name": "@wix/astro",
+        "version": "1.0.4",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "@wix/cli@transitive": {
+      "verdict": "No own advisory; inherits from node-gyp. Pure CLI/build tooling, never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, an old pre-node-gyp-dependency release, not a real upgrade -- latest real release (1.1.251) still depends on the same vulnerable node-gyp range. Blocked upstream.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-26w7-cxv4-gfx2": {
+      "verdict": "Critical (RCE via AVIF), but astro:assets/<Image>/getImage() are unused anywhere in src/ (confirmed by grep) -- this pipeline never executes, at build or at runtime. Not reachable. Same astro 5.x/peer-dep blocker (no 5.x backport exists; fix landed in astro>=7.2.8).",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-2pvr-wf23-7pc7": {
+      "verdict": "No custom prerendered 404/500 error pages exist in src/pages -- not reachable. Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-376h-93r7-7g6f": {
+      "verdict": "astro.config.mjs sets no `base` option, so the vulnerable base-stripping path-boundary check is never exercised -- not reachable. Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-4g3v-8h47-v7g6": {
+      "verdict": "No View Transitions usage anywhere in src/ -- not reachable. Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-7pw4-f3q4-r2p2": {
+      "verdict": "No Astro transition:* directives or ClientRouter/ViewTransitions usage (only unrelated CSS `transition` properties found) -- not reachable. Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-8hv8-536x-4wqp": {
+      "verdict": "Only one static, unnamed <slot /> exists (Layout.astro); no dynamic/user-controlled slot names -- not reachable. Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-f48w-9m4c-m7f5": {
+      "verdict": "No spread-props usage in any component -- not reachable (incomplete-fix follow-up to GHSA-jrpj-wcv7-9fh9). Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-j687-52p2-xcff": {
+      "verdict": "Runtime dep (SSR). define:vars is used once (index.astro hero rotator) but only with site-owner content-collection data, never request-controlled input -- not reachable. No 5.x patch exists and astro>=6 is blocked by @wix/astro and @wix/astro-wix-hosting-adapter peer-pinning astro ^5.0.0.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-jrpj-wcv7-9fh9": {
+      "verdict": "No spread-props ({...x}) usage in any .astro component -- not reachable. Same astro 5.x/peer-dep blocker.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "astro@GHSA-xr5h-phrj-8vxv": {
+      "verdict": "Server islands (server:defer) are not used anywhere in src/ -- not reachable. Same astro 5.x/peer-dep blocker as other astro GHSAs.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
     "cacache@transitive": {
       "verdict": "No own advisory; inherits from tar via node-gyp/make-fetch-happen, same @wix/cli CLI-tooling-only chain as the tar@* entries above. Blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
       "lastReviewedAt": "2026-09-26"
+    },
+    "esbuild@GHSA-g7r4-m6w7-qqqr": {
+      "verdict": "Build-time only (via vite, used by @astrojs/react's bundler); esbuild's dev server is never present in the shipped server or client bundles. Not reachable. fixAvailable is false because vite pins an incompatible esbuild range.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "fast-uri@GHSA-58mr-gqgx-xq4g": {
+      "verdict": "Same @astrojs/check devDependency-only chain as GHSA-qw65-cvwx-89v3 -- not reachable in production. Fixed this run alongside it (fast-uri 3.1.6 -> 3.1.7). PR: https://github.com/Ethanb00/sharav/pull/12",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-29"
+    },
+    "fast-uri@GHSA-qw65-cvwx-89v3": {
+      "verdict": "Only reachable via @astrojs/check (devDependency, editor/IDE type-checking \"astro check\"), which is not invoked by wix build/npm run build or any CI script -- not shipped to or reachable by site visitors. Fixed this run: bumped 3.1.6 -> 3.1.7 via override (within ajv's declared ^3.0.1 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/12",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-29"
     },
     "http-proxy-agent@transitive": {
       "verdict": "No own advisory; inherits from @tootallnate/once, same @wix/cli CLI-tooling-only chain. Blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "ip-address@GHSA-2vr4-cq9g-pvrc": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain as GHSA-rpw4-54j3-4h4q -- not reachable in production. Fixed this run alongside it (ip-address 10.5.0 -> 10.6.0). PR: https://github.com/Ethanb00/sharav/pull/12",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-29"
+    },
+    "ip-address@GHSA-rpw4-54j3-4h4q": {
+      "verdict": "Pure CLI/build tooling chain (@wix/cli -> node-gyp -> make-fetch-happen -> socks-proxy-agent -> socks -> ip-address), same devDependency-only exposure as the tar@* findings; never shipped to or executed on the production server. Unlike the tar/@wix/cli findings, this fix is NOT blocked: socks already declares ip-address ^10.1.1, so 10.6.0 resolves cleanly. Fixed this run via override (10.5.0 -> 10.6.0, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/12",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-29"
+    },
+    "js-yaml@GHSA-2883-xcg3-v3hh": {
+      "verdict": "Runtime dep chain (astro -> @astrojs/markdown-remark -> js-yaml) used for content-collection frontmatter parsing, which does run per-SSR-request in this output:\"server\" app, but only against site-owner-authored content files, never attacker-supplied input -- not externally reachable. Fixed this run: bumped 4.3.1 -> 4.3.2 (within parent's declared ^4.1.1 range, no major bump, build-verified).",
+      "fixAvailable": true,
       "lastReviewedAt": "2026-09-26"
     },
     "make-fetch-happen@transitive": {
       "verdict": "No own advisory; inherits from cacache/http-proxy-agent, same @wix/cli CLI-tooling-only chain. Blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "miniflare@transitive": {
+      "verdict": "No own advisory; inherits from sharp/undici/ws. Simulates the Cloudflare Workers runtime for local dev/preview only -- production traffic runs on Cloudflare's real infrastructure. fixAvailable false.",
+      "fixAvailable": false,
       "lastReviewedAt": "2026-09-26"
     },
     "node-gyp@transitive": {
       "verdict": "No own advisory; root of the @wix/cli CLI-tooling-only chain (pulls in vulnerable tar/make-fetch-happen). Never shipped or run on the server; native builds already skipped via --ignore-scripts. Blocked the same way.",
-      "fixAvailable": {"name": "@wix/cli", "version": "1.0.1", "isSemVerMajor": true},
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "sharp@GHSA-f88m-g3jw-g9cj": {
+      "verdict": "Two paths, both unreachable: (1) astro's optional image pipeline (astro:assets), confirmed unused anywhere in src/; (2) miniflare's local-dev-only Workers simulation. Cloudflare Workers production runtime never executes sharp regardless (default imageService \"compile\" doesn't run sharp at runtime; sharp only ever runs locally during wix build/dev). Not reachable in production. fixAvailable false.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "sharp@GHSA-rgj7-g3m4-5g8c": {
+      "verdict": "Same dual unreachable path as GHSA-f88m-g3jw-g9cj (libheif vuln). Not reachable in production. fixAvailable false.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "svgo@GHSA-4vpr-x523-8j87": {
+      "verdict": "Same astro:assets-only usage as GHSA-w27v-7q3p-w38r -- not reachable. Fixed this run alongside it (svgo 4.0.2 -> 4.1.0).",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "svgo@GHSA-w27v-7q3p-w38r": {
+      "verdict": "Only invoked by astro's asset-optimization pipeline (astro:assets/<Image>), which is unused anywhere in src/ -- not reachable regardless of severity. Fixed this run: bumped 4.0.2 -> 4.1.0 (within astro's declared ^4.0.0 range, no major bump, build-verified).",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-23hp-3jrh-7fpw": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-34x7-hfp2-rc4v": {
+      "verdict": "Pure CLI/build tooling (@wix/cli -> node-gyp -> make-fetch-happen/cacache -> tar), used only for node-gyp's native-toolchain fetching during `wix` CLI operations; never shipped to or executed on the production server. Native builds are already skipped via --ignore-scripts. npm's fixAvailable names @wix/cli@1.0.1, but that is an old pre-node-gyp-dependency release, not a real upgrade path -- verified the current latest @wix/cli (1.1.251) still depends on the same vulnerable node-gyp ^8.4.1 range. Blocked until @wix/cli bumps its own node-gyp dependency upstream.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-83g3-92jg-28cx": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-8qq5-rm4j-mr97": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain as GHSA-34x7-hfp2-rc4v -- not reachable in production, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-8x88-c5mf-7j5w": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-9ppj-qmqm-q256": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-gvwx-54wh-qm9j": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-qffp-2rhf-9h96": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-r292-9mhp-454m": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-r6q2-hw4h-h46w": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-vmf3-w455-68vh": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "tar@GHSA-w8wr-v893-vjvp": {
+      "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way.",
+      "fixAvailable": {
+        "name": "@wix/cli",
+        "version": "1.0.1",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-2mjp-6q6p-2qxm": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-35p6-xmwp-9g52": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-3wwx-pv8p-q78v": {
+      "verdict": "Only affects the undici instance pulled in by astro -> unifont (Astro's font-optimization pipeline), which requires font config in astro.config.mjs -- this repo has none, so the path never executes at build or runtime. Not reachable. Distinct from the already-tracked undici@* entries below, which come from a separate, unrelated miniflare-pinned undici@7.14.0 instance untouched by this fix. Fixed this run via a nested override scoped only to unifont's undici (8.10.0 -> 8.10.2, within unifont's declared ^8.0.0 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/12",
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-09-29"
+    },
+    "undici@GHSA-4992-7rv2-5pvq": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-4cwx-7wf7-3272": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-8xcm-r25x-g524": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-f269-vfmq-vjvj": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-g8m3-5g58-fq7m": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-g9mf-h72j-4rw9": {
+      "verdict": "Via wrangler -> miniflare, which simulates the Cloudflare Workers runtime only for local dev/preview (`wix dev`/`wix preview`); production traffic runs on Cloudflare's real infrastructure, not miniflare. Not reachable on the live site. fixAvailable false (wrangler pins this range).",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-jr45-8vmc-qm54": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-m8rv-5g2x-5cg5": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-p88m-4jfj-68fv": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-pr7r-676h-xcf6": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-v3r7-h72x-cjcm": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-v9p9-hfj2-hcw8": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-vrm6-8vpv-qv8q": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "undici@GHSA-vxpw-j846-p89q": {
+      "verdict": "Same miniflare local-dev-only chain -- not reachable in production.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "wrangler@transitive": {
+      "verdict": "No own advisory; inherits from miniflare (local-dev-only Workers simulation used by `wix dev`/`wix preview`, not the production runtime). fixAvailable false.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "ws@GHSA-58qx-3vcg-4xpx": {
+      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production. fixAvailable false.",
+      "fixAvailable": false,
+      "lastReviewedAt": "2026-09-26"
+    },
+    "ws@GHSA-96hv-2xvq-fx4p": {
+      "verdict": "Same wrangler/miniflare local-dev-only chain -- not reachable in production. fixAvailable false.",
+      "fixAvailable": false,
       "lastReviewedAt": "2026-09-26"
     }
   }
