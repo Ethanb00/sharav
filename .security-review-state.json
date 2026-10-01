@@ -1,9 +1,13 @@
 {
   "reviewed": {
     "@astrojs/cloudflare@GHSA-88gm-j2wx-58h6": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Low-severity SSRF via the Cloudflare Images-binding image-transform endpoint. astro.config.mjs does not configure a Cloudflare Images binding image service (default imageService is \"compile\", and astro:assets is unused entirely) -- this endpoint is never wired up. Not reachable. fixAvailable is false because the patched adapter version (>=13.1.10) isn't resolvable within current wrangler/astro peer constraints."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Low-severity SSRF via the Cloudflare Images-binding image-transform endpoint, never wired up here (default imageService \"compile\", astro:assets unused) -- not reachable even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in a patched @astrojs/cloudflare; applied via PR #14."
     },
     "@tootallnate/once@GHSA-vpq2-c234-7xj6": {
       "fixAvailable": {
@@ -15,23 +19,31 @@
       "verdict": "Low severity, same @wix/cli/node-gyp CLI-tooling-only chain as the tar@* entries above -- never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, not a real upgrade path (see @wix/cli@transitive). Blocked upstream."
     },
     "@wix/astro-pages@transitive": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No own advisory; purely inherits from astro. Same astro 5.x/peer-dep blocker as the astro@* entries above."
+      "fixAvailable": {
+        "name": "@wix/astro-pages",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No own advisory; inherits from astro. The astro 5.x/peer-dep blocker is resolved -- @wix/astro-pages@3.0.0 (peer-pins astro ^7.2.0) applied via PR #14."
     },
     "@wix/astro-wix-hosting-adapter@transitive": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "devDependency; no own advisory; inherits from @astrojs/cloudflare and astro, both already assessed as not reachable above. fixAvailable false."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "devDependency; no own advisory; inherits from @astrojs/cloudflare and astro, both resolved by this run's upgrade. @wix/astro-wix-hosting-adapter@3.0.0 applied via PR #14."
     },
     "@wix/astro@transitive": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/astro",
-        "version": "1.0.4"
+        "version": "3.0.0",
+        "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No own advisory; inherits from astro. Same astro 5.x/peer-dep blocker as the astro@* entries above -- npm's fixAvailable names @wix/astro@1.0.4, an old release that predates the peer-dep pin, not a real forward upgrade path (verified latest real @wix/astro, 2.74.0, still peer-pins astro ^5.0.0)."
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No own advisory; inherits from astro. npm's prior fixAvailable (@wix/astro@1.0.4) was a stale pre-peer-dep-pin release, not a real path -- the real fix is @wix/astro@3.0.0 (peer-pins astro ^7.2.0, released since the last review), applied via PR #14."
     },
     "@wix/cli@transitive": {
       "fixAvailable": {
@@ -43,54 +55,94 @@
       "verdict": "No own advisory; inherits from node-gyp. Pure CLI/build tooling, never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, an old pre-node-gyp-dependency release, not a real upgrade -- latest real release (1.1.251) still depends on the same vulnerable node-gyp range. Blocked upstream."
     },
     "astro@GHSA-26w7-cxv4-gfx2": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Critical (RCE via AVIF), but astro:assets/<Image>/getImage() are unused anywhere in src/ (confirmed by grep) -- this pipeline never executes, at build or at runtime. Not reachable. Same astro 5.x/peer-dep blocker (no 5.x backport exists; fix landed in astro>=7.2.8)."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Critical (RCE via AVIF). astro:assets/<Image>/getImage() remain unused anywhere in src/ (re-confirmed by grep), so this pipeline never executed even while blocked -- but the fix is now available and applied via PR #14 (astro 5.8->7.3.5, coordinated with the @wix/astro* 3.0.0 bump that removes the astro-5.x peer-dependency pin). No longer blocked."
     },
     "astro@GHSA-2pvr-wf23-7pc7": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No custom prerendered 404/500 error pages exist in src/pages -- not reachable. Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No custom prerendered 404/500 error pages exist in src/pages, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-376h-93r7-7g6f": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "astro.config.mjs sets no `base` option, so the vulnerable base-stripping path-boundary check is never exercised -- not reachable. Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "astro.config.mjs sets no `base` option, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-4g3v-8h47-v7g6": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No View Transitions usage anywhere in src/ -- not reachable. Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No View Transitions usage anywhere in src/, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-7pw4-f3q4-r2p2": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No Astro transition:* directives or ClientRouter/ViewTransitions usage (only unrelated CSS `transition` properties found) -- not reachable. Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No Astro transition:* directives or ClientRouter/ViewTransitions usage, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-8hv8-536x-4wqp": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Only one static, unnamed <slot /> exists (Layout.astro); no dynamic/user-controlled slot names -- not reachable. Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Only one static, unnamed <slot /> exists, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-f48w-9m4c-m7f5": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No spread-props usage in any component -- not reachable (incomplete-fix follow-up to GHSA-jrpj-wcv7-9fh9). Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No spread-props usage in any component, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-j687-52p2-xcff": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Runtime dep (SSR). define:vars is used once (index.astro hero rotator) but only with site-owner content-collection data, never request-controlled input -- not reachable. No 5.x patch exists and astro>=6 is blocked by @wix/astro and @wix/astro-wix-hosting-adapter peer-pinning astro ^5.0.0."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Runtime dep (SSR). define:vars is used once (index.astro hero rotator) but only with site-owner content-collection data, never request-controlled input -- not reachable even while blocked. Fix now available via PR #14 (astro->7.3.5); the long-standing @wix/astro-wix-hosting-adapter peer-dep blocker on astro>=6 is resolved now that it ships a 3.0.0 major supporting astro ^7.2.0."
     },
     "astro@GHSA-jrpj-wcv7-9fh9": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No spread-props ({...x}) usage in any .astro component -- not reachable. Same astro 5.x/peer-dep blocker."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No spread-props ({...x}) usage in any .astro component, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "astro@GHSA-xr5h-phrj-8vxv": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Server islands (server:defer) are not used anywhere in src/ -- not reachable. Same astro 5.x/peer-dep blocker as other astro GHSAs."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Server islands (server:defer) are not used anywhere in src/, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
     },
     "brace-expansion@GHSA-6j4f-fj2g-mc7p": {
       "fixAvailable": true,
@@ -117,9 +169,13 @@
       "verdict": "No own advisory; inherits from tar via node-gyp/make-fetch-happen, same @wix/cli CLI-tooling-only chain as the tar@* entries above. Blocked the same way."
     },
     "esbuild@GHSA-g7r4-m6w7-qqqr": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Build-time only (via vite, used by @astrojs/react's bundler); esbuild's dev server is never present in the shipped server or client bundles. Not reachable. fixAvailable is false because vite pins an incompatible esbuild range."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Build-time only (via vite, used by @astrojs/react's bundler); esbuild's dev server is never present in shipped bundles -- not reachable even while blocked. Fix now available: astro@7.3.5 (applied via PR #14) pulls in a vite version with a patched esbuild."
     },
     "fast-uri@GHSA-58mr-gqgx-xq4g": {
       "fixAvailable": true,
@@ -180,9 +236,13 @@
       "verdict": "No own advisory; inherits from cacache/http-proxy-agent, same @wix/cli CLI-tooling-only chain. Blocked the same way."
     },
     "miniflare@transitive": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No own advisory; inherits from sharp/undici/ws. Simulates the Cloudflare Workers runtime for local dev/preview only -- production traffic runs on Cloudflare's real infrastructure. fixAvailable false."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No own advisory; inherits from sharp/undici/ws. Simulates the Cloudflare Workers runtime for local dev/preview only -- production traffic runs on Cloudflare's real infrastructure, not reachable even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated wrangler/miniflare range, applied via PR #14."
     },
     "node-gyp@transitive": {
       "fixAvailable": {
@@ -194,14 +254,22 @@
       "verdict": "No own advisory; root of the @wix/cli CLI-tooling-only chain (pulls in vulnerable tar/make-fetch-happen). Never shipped or run on the server; native builds already skipped via --ignore-scripts. Blocked the same way."
     },
     "sharp@GHSA-f88m-g3jw-g9cj": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Two paths, both unreachable: (1) astro's optional image pipeline (astro:assets), confirmed unused anywhere in src/; (2) miniflare's local-dev-only Workers simulation. Cloudflare Workers production runtime never executes sharp regardless (default imageService \"compile\" doesn't run sharp at runtime; sharp only ever runs locally during wix build/dev). Not reachable in production. fixAvailable false."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Two paths, both unreachable regardless: astro:assets (confirmed unused in src/) and miniflare's local-dev-only simulation; Cloudflare Workers production never executes sharp at runtime either way. Fix now available via astro@7.3.5's updated sharp range, applied via PR #14."
     },
     "sharp@GHSA-rgj7-g3m4-5g8c": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same dual unreachable path as GHSA-f88m-g3jw-g9cj (libheif vuln). Not reachable in production. fixAvailable false."
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.5",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Same dual unreachable path as GHSA-f88m-g3jw-g9cj (libheif vuln). Fix now available via astro@7.3.5's updated sharp range, applied via PR #14."
     },
     "svgo@GHSA-4vpr-x523-8j87": {
       "fixAvailable": true,
@@ -322,154 +390,274 @@
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "undici@GHSA-2gqq-gqf2-x968": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-2jfj-6hjv-fm6j": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-2mjp-6q6p-2qxm": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-35p6-xmwp-9g52": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-3wwx-pv8p-q78v": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way. (Previously assessed as fixable in full via override; re-assessed this run because npm's advisory database added more undici GHSAs covering the miniflare-bundled instance, which is not resolvable the same way.)"
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-3xpg-4rpp-hhhm": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-4992-7rv2-5pvq": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-4cwx-7wf7-3272": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-8436-99hf-9mmv": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-8xcm-r25x-g524": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-f269-vfmq-vjvj": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-g8m3-5g58-fq7m": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-g9mf-h72j-4rw9": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Via wrangler -> miniflare, which simulates the Cloudflare Workers runtime only for local dev/preview (`wix dev`/`wix preview`); production traffic runs on Cloudflare's real infrastructure, not miniflare. Not reachable on the live site. fixAvailable false (wrangler pins this range)."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-jr45-8vmc-qm54": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-m8rv-5g2x-5cg5": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-p88m-4jfj-68fv": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-pmjh-fq2x-6v4x": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-pr7r-676h-xcf6": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-r53p-7pc4-xj5r": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-rfgv-xxqx-mfg5": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-rx4f-c7p8-82vq": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-v3r7-h72x-cjcm": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-v9p9-hfj2-hcw8": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-vp8m-p9jh-q5pm": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-vrm6-8vpv-qv8q": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-vxpw-j846-p89q": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same miniflare local-dev-only chain -- not reachable in production."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-w293-vg96-wgc3": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-30",
-      "verdict": "Two separate instances, both unreachable in production: (1) node_modules/undici@8.10.0 via astro (runtime dep) -> unifont, only used by Astro's opt-in experimental font-optimization feature, which is NOT enabled in astro.config.mjs (no `experimental.fonts`/font usage anywhere in src/, confirmed by grep) -- this codepath never runs; (2) node_modules/miniflare/node_modules/undici@7.14.0 via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, never miniflare. npm reports fixAvailable=false because instance (2) can't be resolved without a larger wrangler bump; instance (1) IS overridable and open PR #12 already proposes it (unifont.undici -> 8.10.2), which resolves instance (1)'s advisories but not instance (2)'s -- so this finding stays open/blocked for the miniflare-bundled instance until wrangler ships a fix. Not reachable on the live site either way."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "wrangler@transitive": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "No own advisory; inherits from miniflare (local-dev-only Workers simulation used by `wix dev`/`wix preview`, not the production runtime). fixAvailable false."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "No own advisory; inherits from miniflare (local-dev-only Workers simulation). Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated wrangler range, applied via PR #14."
     },
     "ws@GHSA-58qx-3vcg-4xpx": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production. fixAvailable false."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated ws range, applied via PR #14."
     },
     "ws@GHSA-96hv-2xvq-fx4p": {
-      "fixAvailable": false,
-      "lastReviewedAt": "2026-09-26",
-      "verdict": "Same wrangler/miniflare local-dev-only chain -- not reachable in production. fixAvailable false."
+      "fixAvailable": {
+        "name": "@wix/astro-wix-hosting-adapter",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-01",
+      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated ws range, applied via PR #14."
     }
   }
 }
