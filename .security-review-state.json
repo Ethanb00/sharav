@@ -3,17 +3,17 @@
     "@astrojs/cloudflare@GHSA-88gm-j2wx-58h6": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Low-severity SSRF via the Cloudflare Images-binding image-transform endpoint, never wired up here (default imageService \"compile\", astro:assets unused) -- not reachable even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in a patched @astrojs/cloudflare; applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Low-severity SSRF via the Cloudflare Images-binding image-transform endpoint, never wired up here (default imageService \"compile\", astro:assets unused) -- not reachable even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in a patched @astrojs/cloudflare; applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "@tootallnate/once@GHSA-vpq2-c234-7xj6": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Low severity, same @wix/cli/node-gyp CLI-tooling-only chain as the tar@* entries above -- never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, not a real upgrade path (see @wix/cli@transitive). Blocked upstream."
@@ -21,35 +21,35 @@
     "@wix/astro-pages@transitive": {
       "fixAvailable": {
         "name": "@wix/astro-pages",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No own advisory; inherits from astro. The astro 5.x/peer-dep blocker is resolved -- @wix/astro-pages@3.0.0 (peer-pins astro ^7.2.0) applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "No own advisory; inherits from astro. The astro 5.x/peer-dep blocker is resolved -- @wix/astro-pages@3.0.0 (peer-pins astro ^7.2.0) applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "@wix/astro-wix-hosting-adapter@transitive": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "devDependency; no own advisory; inherits from @astrojs/cloudflare and astro, both resolved by this run's upgrade. @wix/astro-wix-hosting-adapter@3.0.0 applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "devDependency; no own advisory; inherits from @astrojs/cloudflare and astro, both resolved by this run's upgrade. @wix/astro-wix-hosting-adapter@3.0.1 applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "@wix/astro@transitive": {
       "fixAvailable": {
         "name": "@wix/astro",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No own advisory; inherits from astro. npm's prior fixAvailable (@wix/astro@1.0.4) was a stale pre-peer-dep-pin release, not a real path -- the real fix is @wix/astro@3.0.0 (peer-pins astro ^7.2.0, released since the last review), applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "No own advisory; inherits from astro. npm's prior fixAvailable (@wix/astro@1.0.4) was a stale pre-peer-dep-pin release, not a real path -- the real fix is @wix/astro@3.0.0 (peer-pins astro ^7.2.0, released since the last review), applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "@wix/cli@transitive": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "No own advisory; inherits from node-gyp. Pure CLI/build tooling, never shipped or run on the server. npm's fixAvailable names @wix/cli@1.0.1, an old pre-node-gyp-dependency release, not a real upgrade -- latest real release (1.1.251) still depends on the same vulnerable node-gyp range. Blocked upstream."
@@ -161,12 +161,42 @@
     },
     "cacache@transitive": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "No own advisory; inherits from tar via node-gyp/make-fetch-happen, same @wix/cli CLI-tooling-only chain as the tar@* entries above. Blocked the same way."
+    },
+    "devalue@GHSA-4q55-j62x-fr9h": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Transitive runtime dep of astro (astro->devalue ^5.6.2), used to serialize component props for client-hydrated islands -- this app has zero client:* directives or React component usage in src/, so the vulnerable uneval/stringify/stringifyAsync code paths never execute. Not reachable on the live site today. Fixed this run via override (devalue 5.9.1 -> 5.9.4, within astros declared ^5.6.2 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/15"
+    },
+    "devalue@GHSA-hx4r-w6wj-j8fg": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Transitive runtime dep of astro (astro->devalue ^5.6.2), used to serialize component props for client-hydrated islands -- this app has zero client:* directives or React component usage in src/, so the vulnerable uneval/stringify/stringifyAsync code paths never execute. Not reachable on the live site today. Fixed this run via override (devalue 5.9.1 -> 5.9.4, within astros declared ^5.6.2 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/15"
+    },
+    "devalue@GHSA-j22f-vq7h-c4qm": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Transitive runtime dep of astro (astro->devalue ^5.6.2), used to serialize component props for client-hydrated islands -- this app has zero client:* directives or React component usage in src/, so the vulnerable uneval/stringify/stringifyAsync code paths never execute. Not reachable on the live site today. Fixed this run via override (devalue 5.9.1 -> 5.9.4, within astros declared ^5.6.2 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/15"
+    },
+    "devalue@GHSA-mcm9-63f2-9j32": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Transitive runtime dep of astro (astro->devalue ^5.6.2), used to serialize component props for client-hydrated islands -- this app has zero client:* directives or React component usage in src/, so the vulnerable uneval/stringify/stringifyAsync code paths never execute. Not reachable on the live site today. Fixed this run via override (devalue 5.9.1 -> 5.9.4, within astros declared ^5.6.2 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/15"
+    },
+    "devalue@GHSA-wf3x-273g-mvxv": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Transitive runtime dep of astro (astro->devalue ^5.6.2), used to serialize component props for client-hydrated islands -- this app has zero client:* directives or React component usage in src/, so the vulnerable uneval/stringify/stringifyAsync code paths never execute. Not reachable on the live site today. Fixed this run via override (devalue 5.9.1 -> 5.9.4, within astros declared ^5.6.2 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/15"
+    },
+    "devalue@GHSA-x5rw-q4pp-hg5g": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Transitive runtime dep of astro (astro->devalue ^5.6.2), used to serialize component props for client-hydrated islands -- this app has zero client:* directives or React component usage in src/, so the vulnerable uneval/stringify/stringifyAsync code paths never execute. Not reachable on the live site today. Fixed this run via override (devalue 5.9.1 -> 5.9.4, within astros declared ^5.6.2 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/15"
     },
     "esbuild@GHSA-g7r4-m6w7-qqqr": {
       "fixAvailable": {
@@ -194,9 +224,9 @@
     },
     "http-proxy-agent@transitive": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "No own advisory; inherits from @tootallnate/once, same @wix/cli CLI-tooling-only chain. Blocked the same way."
@@ -228,9 +258,9 @@
     },
     "make-fetch-happen@transitive": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "No own advisory; inherits from cacache/http-proxy-agent, same @wix/cli CLI-tooling-only chain. Blocked the same way."
@@ -238,17 +268,17 @@
     "miniflare@transitive": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No own advisory; inherits from sharp/undici/ws. Simulates the Cloudflare Workers runtime for local dev/preview only -- production traffic runs on Cloudflare's real infrastructure, not reachable even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated wrangler/miniflare range, applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "No own advisory; inherits from sharp/undici/ws. Simulates the Cloudflare Workers runtime for local dev/preview only -- production traffic runs on Cloudflare's real infrastructure, not reachable even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.1's updated wrangler/miniflare range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "node-gyp@transitive": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "No own advisory; root of the @wix/cli CLI-tooling-only chain (pulls in vulnerable tar/make-fetch-happen). Never shipped or run on the server; native builds already skipped via --ignore-scripts. Blocked the same way."
@@ -283,108 +313,108 @@
     },
     "tar@GHSA-23hp-3jrh-7fpw": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-34x7-hfp2-rc4v": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Pure CLI/build tooling (@wix/cli -> node-gyp -> make-fetch-happen/cacache -> tar), used only for node-gyp's native-toolchain fetching during `wix` CLI operations; never shipped to or executed on the production server. Native builds are already skipped via --ignore-scripts. npm's fixAvailable names @wix/cli@1.0.1, but that is an old pre-node-gyp-dependency release, not a real upgrade path -- verified the current latest @wix/cli (1.1.251) still depends on the same vulnerable node-gyp ^8.4.1 range. Blocked until @wix/cli bumps its own node-gyp dependency upstream."
     },
     "tar@GHSA-83g3-92jg-28cx": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-8qq5-rm4j-mr97": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain as GHSA-34x7-hfp2-rc4v -- not reachable in production, blocked the same way."
     },
     "tar@GHSA-8x88-c5mf-7j5w": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-9ppj-qmqm-q256": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-gvwx-54wh-qm9j": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-qffp-2rhf-9h96": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-r292-9mhp-454m": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-r6q2-hw4h-h46w": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-vmf3-w455-68vh": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
     },
     "tar@GHSA-w8wr-v893-vjvp": {
       "fixAvailable": {
-        "isSemVerMajor": true,
         "name": "@wix/cli",
-        "version": "1.0.1"
+        "version": "1.0.1",
+        "isSemVerMajor": true
       },
       "lastReviewedAt": "2026-09-26",
       "verdict": "Same @wix/cli/node-gyp CLI-tooling-only chain -- not reachable, blocked the same way."
@@ -392,272 +422,272 @@
     "undici@GHSA-2gqq-gqf2-x968": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-2jfj-6hjv-fm6j": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-2mjp-6q6p-2qxm": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-35p6-xmwp-9g52": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-3wwx-pv8p-q78v": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-3xpg-4rpp-hhhm": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-4992-7rv2-5pvq": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-4cwx-7wf7-3272": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-8436-99hf-9mmv": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-8xcm-r25x-g524": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-f269-vfmq-vjvj": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-g8m3-5g58-fq7m": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-g9mf-h72j-4rw9": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-jr45-8vmc-qm54": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-m8rv-5g2x-5cg5": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-p88m-4jfj-68fv": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-pmjh-fq2x-6v4x": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-pr7r-676h-xcf6": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-r53p-7pc4-xj5r": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-rfgv-xxqx-mfg5": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-rx4f-c7p8-82vq": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-v3r7-h72x-cjcm": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-v9p9-hfj2-hcw8": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-vp8m-p9jh-q5pm": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-vrm6-8vpv-qv8q": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-vxpw-j846-p89q": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "undici@GHSA-w293-vg96-wgc3": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.0 pulls in an updated undici range, applied via PR #14 (coordinated astro 7 / @wix/astro* 3.x upgrade)."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Via wrangler/miniflare (devDependency), which only simulates the Cloudflare Workers runtime for local `wix dev`/preview -- production traffic runs on Cloudflare's real infrastructure, not reachable in production even while blocked. Fix now available: @wix/astro-wix-hosting-adapter@3.0.1 pulls in an updated undici range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically) (coordinated astro 7 / @wix/astro* 3.x upgrade)."
     },
     "wrangler@transitive": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No own advisory; inherits from miniflare (local-dev-only Workers simulation). Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated wrangler range, applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "No own advisory; inherits from miniflare (local-dev-only Workers simulation). Fix now available via @wix/astro-wix-hosting-adapter@3.0.1's updated wrangler range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "ws@GHSA-58qx-3vcg-4xpx": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated ws range, applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.1's updated ws range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     },
     "ws@GHSA-96hv-2xvq-fx4p": {
       "fixAvailable": {
         "name": "@wix/astro-wix-hosting-adapter",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.0's updated ws range, applied via PR #14."
+      "lastReviewedAt": "2026-10-02",
+      "verdict": "Same wrangler/miniflare local-dev-only chain as undici -- not reachable in production even while blocked. Fix now available via @wix/astro-wix-hosting-adapter@3.0.1's updated ws range, applied via open PR #14 (uses a ^3.0.0 caret range, so merging it will pull in 3.0.1 automatically)."
     }
   }
 }
