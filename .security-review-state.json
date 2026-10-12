@@ -57,92 +57,92 @@
     "astro@GHSA-26w7-cxv4-gfx2": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Critical (RCE via AVIF). astro:assets/<Image>/getImage() remain unused anywhere in src/ (re-confirmed by grep), so this pipeline never executed even while blocked -- but the fix is now available and applied via PR #14 (astro 5.8->7.3.5, coordinated with the @wix/astro* 3.0.0 bump that removes the astro-5.x peer-dependency pin). No longer blocked."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Critical (RCE via AVIF). astro:assets/<Image>/getImage() remain unused anywhere in src/ (re-confirmed by grep), so this pipeline never executed even while blocked -- but the fix is now available and applied via PR #14 (astro 5.8->7.3.5, coordinated with the @wix/astro* 3.0.0 bump that removes the astro-5.x peer-dependency pin). No longer blocked. Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-2pvr-wf23-7pc7": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No custom prerendered 404/500 error pages exist in src/pages, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "No custom prerendered 404/500 error pages exist in src/pages, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-376h-93r7-7g6f": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "astro.config.mjs sets no `base` option, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "astro.config.mjs sets no `base` option, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-4g3v-8h47-v7g6": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No View Transitions usage anywhere in src/, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "No View Transitions usage anywhere in src/, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-7pw4-f3q4-r2p2": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No Astro transition:* directives or ClientRouter/ViewTransitions usage, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "No Astro transition:* directives or ClientRouter/ViewTransitions usage, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-8hv8-536x-4wqp": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Only one static, unnamed <slot /> exists, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Only one static, unnamed <slot /> exists, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-f48w-9m4c-m7f5": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No spread-props usage in any component, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "No spread-props usage in any component, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-j687-52p2-xcff": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Runtime dep (SSR). define:vars is used once (index.astro hero rotator) but only with site-owner content-collection data, never request-controlled input -- not reachable even while blocked. Fix now available via PR #14 (astro->7.3.5); the long-standing @wix/astro-wix-hosting-adapter peer-dep blocker on astro>=6 is resolved now that it ships a 3.0.0 major supporting astro ^7.2.0."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Runtime dep (SSR). define:vars is used once (index.astro hero rotator) but only with site-owner content-collection data, never request-controlled input -- not reachable even while blocked. Fix now available via PR #14 (astro->7.3.5); the long-standing @wix/astro-wix-hosting-adapter peer-dep blocker on astro>=6 is resolved now that it ships a 3.0.0 major supporting astro ^7.2.0. Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-jrpj-wcv7-9fh9": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "No spread-props ({...x}) usage in any .astro component, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "No spread-props ({...x}) usage in any .astro component, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "astro@GHSA-xr5h-phrj-8vxv": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Server islands (server:defer) are not used anywhere in src/, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5)."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Server islands (server:defer) are not used anywhere in src/, so not reachable even while blocked -- fix now available via PR #14 (astro->7.3.5). Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "brace-expansion@GHSA-6j4f-fj2g-mc7p": {
       "fixAvailable": true,
@@ -201,11 +201,11 @@
     "esbuild@GHSA-g7r4-m6w7-qqqr": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Build-time only (via vite, used by @astrojs/react's bundler); esbuild's dev server is never present in shipped bundles -- not reachable even while blocked. Fix now available: astro@7.3.5 (applied via PR #14) pulls in a vite version with a patched esbuild."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Build-time only (via vite, used by @astrojs/react's bundler); esbuild's dev server is never present in shipped bundles -- not reachable even while blocked. Fix now available: astro@7.3.5 (applied via PR #14) pulls in a vite version with a patched esbuild. Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "fast-uri@GHSA-58mr-gqgx-xq4g": {
       "fixAvailable": true,
@@ -221,6 +221,11 @@
       "fixAvailable": true,
       "lastReviewedAt": "2026-09-29",
       "verdict": "Only reachable via @astrojs/check (devDependency, editor/IDE type-checking \"astro check\"), which is not invoked by wix build/npm run build or any CI script -- not shipped to or reachable by site visitors. Fixed this run: bumped 3.1.6 -> 3.1.7 via override (within ajv's declared ^3.0.1 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/12"
+    },
+    "http-cache-semantics@GHSA-ch52-4w7c-c8xp": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Two paths: (1) @wix/cli->node-gyp->make-fetch-happen, CLI-tooling-only, never shipped to the server; (2) astro's own direct dependency, used in astro/dist/assets/build/remote.js for the astro:assets remote-image caching logic -- confirmed unused anywhere in src/ (re-confirmed by grep), so not reachable even via this path. Fixed this run via override (4.2.0 -> 4.3.0, within astro's declared ^4.2.0 and make-fetch-happen's ^4.1.0 ranges, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/16"
     },
     "http-proxy-agent@transitive": {
       "fixAvailable": {
@@ -286,20 +291,39 @@
     "sharp@GHSA-f88m-g3jw-g9cj": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Two paths, both unreachable regardless: astro:assets (confirmed unused in src/) and miniflare's local-dev-only simulation; Cloudflare Workers production never executes sharp at runtime either way. Fix now available via astro@7.3.5's updated sharp range, applied via PR #14."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Two paths, both unreachable regardless: astro:assets (confirmed unused in src/) and miniflare's local-dev-only simulation; Cloudflare Workers production never executes sharp at runtime either way. Fix now available via astro@7.3.5's updated sharp range, applied via PR #14. Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
     },
     "sharp@GHSA-rgj7-g3m4-5g8c": {
       "fixAvailable": {
         "name": "astro",
-        "version": "7.3.5",
+        "version": "7.3.8",
         "isSemVerMajor": true
       },
-      "lastReviewedAt": "2026-10-01",
-      "verdict": "Same dual unreachable path as GHSA-f88m-g3jw-g9cj (libheif vuln). Fix now available via astro@7.3.5's updated sharp range, applied via PR #14."
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Same dual unreachable path as GHSA-f88m-g3jw-g9cj (libheif vuln). Fix now available via astro@7.3.5's updated sharp range, applied via PR #14. Upstream astro patch is now 7.3.8 (was 7.3.5 at last review) -- still within PR #14's \"astro\": \"^7.3.5\" caret range, so no change needed to that PR; same reachability analysis as before."
+    },
+    "sharp@GHSA-wq5f-xc86-pv6w": {
+      "fixAvailable": {
+        "name": "astro",
+        "version": "7.3.8",
+        "isSemVerMajor": true
+      },
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Same dual unreachable path as the other sharp findings (librsvg vuln): astro:assets is unused in src/, and Cloudflare Workers production never executes sharp at runtime regardless (miniflare's local-dev-only simulation is the only other path). Fix now available via astro@7.3.8's updated sharp range, applied via open PR #14 (astro->7.3.x upgrade)."
+    },
+    "smol-toml@GHSA-r4xh-jqrq-34v2": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Runtime dep chain (astro -> @astrojs/markdown-remark -> smol-toml), used only to parse TOML (+++) frontmatter; every content file in src/data/content uses YAML (---) frontmatter and no +++ delimiter exists anywhere in src/, so toml.parse() is never actually invoked -- not reachable, and even less so than the already-documented js-yaml finding since the code path itself is never entered. Fixed this run via override (1.8.0 -> 1.9.1, within @astrojs/markdown-remark's declared ^1.6.0 range, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/16"
+    },
+    "source-map-js@GHSA-68fv-2mgg-jv7q": {
+      "fixAvailable": true,
+      "lastReviewedAt": "2026-10-12",
+      "verdict": "Used by vite/postcss/svgo/csso/magicast during the CSS and config-processing build pipeline (wix build time, on the build machine), never by the deployed Cloudflare Worker serving live requests -- not reachable in production. Fixed this run via override (1.2.1 -> 1.2.2, within postcss/css-tree's declared ^1.2.1 and csso's ^1.0.1 ranges, no major bump, build-verified). PR: https://github.com/Ethanb00/sharav/pull/16"
     },
     "svgo@GHSA-4vpr-x523-8j87": {
       "fixAvailable": true,
